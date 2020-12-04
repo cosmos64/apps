@@ -1,21 +1,22 @@
 
 pkgname=virtualbox-guest-additions
-pkgver=5.1.8
-_pkgver=5.1.8
+pkgver=6.1.16
+_pkgver=6.1.16
 pkgrel=1
 pkgdesc='The official VirtualBox Guest Additions ISO image'
 arch=('x86_64')
-url='http://www.virtualbox.org'
+url='https://www.virtualbox.org'
 license=('custom:PUEL')
 install=virtualbox-guest-additions.install
 depends=('make' 'pkg-config')
-source=("http://download.virtualbox.org/virtualbox/${_pkgver}/VBoxGuestAdditions_${_pkgver}.iso"
+source=("https://download.virtualbox.org/virtualbox/${_pkgver}/VBoxGuestAdditions_${_pkgver}.iso"
+#source=("https://www.virtualbox.org/download/testcase/VBoxGuestAdditions_${_pkgver}.iso"
         'vboxservice.service'
         'LICENSE')
 noextract=(VBoxGuestAdditions_${_pkgver}.iso)
-md5sums=('c05f0eb1d92b979ae29330558dfc7095'
-         'f50243f38c6dd103e7e944f635d66fa0'
-         'c32cd777d97ebc094af7548e2fd866c2')
+sha256sums=('88db771a5efd7c048228e5c1e0b8fba56542e9d8c1b75f7af5b0c4cf334f0584'
+            'aaa8d3d71c8585edf43ed11676ccd567cc85fc23752d3c3499506741cef3c9ba'
+            'e7a050caef7c640d3f5ccfecc03dc6e2c67402e192031034fbc88ee85034d29f')
 
 package() {
   install -Dm 644 VBoxGuestAdditions_${_pkgver}.iso \

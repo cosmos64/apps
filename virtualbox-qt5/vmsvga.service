@@ -1,0 +1,9 @@
+[Unit]
+Description=VMSVGA Guest Service
+BindsTo=sddm.service
+
+[Service]
+ExecStart=/usr/bin/VBoxDRMClient
+
+[Install]
+WantedBy=multi-user.target

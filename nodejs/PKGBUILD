@@ -1,17 +1,17 @@
 
 pkgname=nodejs
-pkgver=7.0.0
+pkgver=15.3.0
 pkgrel=1
 pkgdesc="Platform built on Chrome's JavaScript runtime for easily building fast, scalable network applications."
 arch=('x86_64')
-url='http://nodejs.org/'
+url='https://nodejs.org/'
 license=('MIT')
-depends=('python2' 'openssl' 'zlib' 'icu' 'libuv' 'c-ares')
+depends=('python3' 'openssl' 'zlib' 'libuv' 'icu' 'c-ares')
 makedepends=('procps-ng')
 checkdepends=('curl') 
 options=('!emptydirs')
 source=("https://github.com/nodejs/node/archive/v${pkgver}.tar.gz")
-md5sums=('e331b4317d0085aba63da261703d4a48')
+md5sums=('ba0606f6547a83e1e7305e14fe7d5ac7')
 
 build() {
   cd node-${pkgver}
@@ -20,14 +20,16 @@ build() {
     --with-intl=system-icu \
     --shared-openssl \
     --shared-cares \
+    --shared-libuv \
+    --experimental-http-parser \
     --shared-zlib 
   make
 }
 
 check() {
   cd node-${pkgver}
-  
-  make -j1 test
+
+  #make test
 }
 
 package() {

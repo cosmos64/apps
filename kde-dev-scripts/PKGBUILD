@@ -9,11 +9,8 @@ pkgdesc='Scripts and setting files useful during development of KDE software'
 url='https://projects.kde.org/projects/kde/kdesdk/kde-dev-scripts'
 arch=('x86_64')
 license=('GPL' 'LGPL' 'FDL')
-groups=('kde' 'kdesdk' 'kde-uninstall')
-depends=('kdelibs4support' 'python2')
+groups=('kde' 'kde-sdk' 'kde-uninstall')
 makedepends=('extra-cmake-modules' 'kdoctools')
-conflicts=('kdesdk-dev-scripts')
-replaces=('kdesdk-dev-scripts')
 source=("$_mirror/${pkgname}-$_kdever.tar.xz")
 md5sums=(`grep ${pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
 
@@ -24,7 +21,7 @@ build() {
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_INSTALL_DIR=lib \
+    -DKDE_INSTALL_LIBDIR=lib \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON 
   make
 }

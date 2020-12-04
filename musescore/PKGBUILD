@@ -1,30 +1,35 @@
 
 pkgname=musescore
-pkgver=2.0.3
+pkgver=3.5.2
 pkgrel=1
 pkgdesc="Music notation and composition software written in Qt"
 arch=('x86_64')
-url="http://www.musescore.org/en/"
+url="https://www.musescore.org/en/"
 license=('GPL')
-depends=('qt5-webkit' 'qt5-svg' 'qt5-tools' 'openssl' 'pulseaudio' 'lame' 'portaudio-svn' 'jack')
-makedepends=('cmake' 'doxygen' 'texlive-core')
+depends=('qtwebengine' 'qt5-svg' 'qt5-tools' 'qt5-xmlpatterns' 'qt5-quickcontrols2'
+         'qt5-graphicaleffects' 'openssl' 'pulseaudio' 'lame' 'portaudio' 'jack' 'portmidi')
+makedepends=('cmake' 'doxygen' 'texlive-core' 'qt5-script')
 groups=('multimedia')
-source=("https://github.com/musescore/MuseScore/archive/v${pkgver}.tar.gz")
-md5sums=('9f1a870302b27c25e8be729648af1c64')
+source=("https://github.com/musescore/MuseScore/archive/v${pkgver}.tar.gz"
+#source=("https://download.musescore.com/releases/MuseScore-${pkgver}/MuseScore-${pkgver}.zip"
+        'cmake_install.diff')
+md5sums=('db82bdb1d37b7ad875880258176c0d25'
+         '421e6b35338f5c853cb92f29838e01f3')
 
 prepare() {
-  cd ${srcdir}/MuseScore-${pkgver}
-  #sed -i 's|add_subdirectory(manual)|#add_subdirectory(manual)|' CMakeLists.txt
+  cd MuseScore-${pkgver}
+  #sed -i 's|QT_QMAKE_EXECUTABLE qmake|QT_QMAKE_EXECUTABLE qmake-qt5|' build/FindQt5.cmake
 }
 
 build() {
   mkdir -p build
   cd build
   
+  PATH=/usr/lib/qt5/bin:${PATH}
   cmake ../MuseScore-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DCMAKE_SKIP_RPATH=On
+    -DBUILD_CRASH_REPORTER=OFF 
   make lrelease
   make manpages
   make
@@ -32,13 +37,15 @@ build() {
 
 package() {
   cd build
+  #patch -p1 -i ${srcdir}/cmake_install.diff
+  
   make DESTDIR=${pkgdir} install
   
   # package mscore fonts so they can be used by other apps
   cd ../MuseScore-${pkgver}
   install -m755 -d ${pkgdir}/usr/share/fonts/mscore
-  install -m644 fonts/mscoreTab.*tf $pkgdir/usr/share/fonts/mscore/
-  install -m644 fonts/MuseJazz.ttf $pkgdir/usr/share/fonts/mscore/
-  install -m644 fonts/mscore/mscore.otf $pkgdir/usr/share/fonts/mscore/
-  install -m644 fonts/mscore/*.ttf $pkgdir/usr/share/fonts/mscore/
+  install -m644 fonts/mscoreTab.*tf ${pkgdir}/usr/share/fonts/mscore/
+  install -m644 fonts/musejazz/MuseJazz.otf ${pkgdir}/usr/share/fonts/mscore/
+  #install -m644 fonts/mscore/mscore.otf ${pkgdir}/usr/share/fonts/mscore/
+  install -m644 fonts/mscore/*.ttf ${pkgdir}/usr/share/fonts/mscore/
 }

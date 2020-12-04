@@ -1,38 +1,60 @@
 
 pkgname=js
-pkgver=17.0.0
-pkgrel=4
+pkgver=78.5.0
+_pkgver=78.5.0esr
+pkgrel=1
 pkgdesc="JavaScript interpreter and libraries"
 arch=('x86_64')
-url="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Releases/17"
+url="https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey/Releases/"
 license=('GPL2')
-depends=('nspr' 'gcc-libs' 'libffi' 'readline')
-makedepends=('python2' 'zip')
-replaces=('spidermonkey' 'js185')
-conflicts=('spidermonkey' 'js185')
-provides=('spidermonkey' 'js185')
-source=("http://ftp.mozilla.org/pub/mozilla.org/js/mozjs${pkgver}.tar.gz")
-md5sums=('20b6f8f1140ef6e47daa3b16965c9202')
+depends=('nspr' 'gcc-libs' 'libffi' 'readline' 'icu')
+makedepends=('python3-pip' 'zip' 'autoconf2.13' 'rust')
+#source=("https://ftp.gnome.org/pub/gnome/teams/releng/tarballs-needing-help/mozjs/mozjs-${_pkgver}.tar.bz2"
+#source=("https://hg.mozilla.org/mozilla-unified/archive/FIREFOX_${_pkgver}.tar.bz2")
+source=("https://archive.mozilla.org/pub/firefox/releases/${_pkgver}/source/firefox-${_pkgver}.source.tar.xz"
+        'copy_headers.patch')
+md5sums=('154f790f56b0a7aa344947c45accad5d'
+         'a258b7a06260bb568f2d958631740b47')
 
-build() {
-  cd mozjs${pkgver}/js/src
-  # http://www.linuxfromscratch.org/blfs/view/svn/general/JS2.html needed for newer perl
-  sed -i 's/(defined\((@TEMPLATE_FILE)\))/\1/' config/milestone.pl
-
-  unset CPPFLAGS
-
-  ./configure --prefix=/usr \
-       --with-system-nspr \
-       --enable-threadsafe \
-       --with-system-libffi \
-       --enable-readline
-
-  make
+prepare() {
+  cd firefox-${pkgver}
+  
+  # http://www.linuxfromscratch.org/blfs/view/svn//general/js68.html
+  #sed '21,+4d' -i js/moz.configure
+#  patch -p1 -i ${srcdir}/copy_headers.patch
 }
 
+build() {
+  mkdir -p obj
+  cd obj
+  #cd mozjs-${_pkgver}/js/src
+
+  CC=gcc CXX=g++ # LLVM_OBJDUMP=/bin/false
+
+  #autoconf-2.13
+  ../firefox-${pkgver}/js/src/configure --prefix=/usr \
+       --disable-debug \
+       --disable-debug-symbols \
+       --disable-optimize \
+       --disable-strip \
+       --with-system-nspr \
+       --with-system-zlib \
+       --with-intl-api \
+       --with-system-icu \
+       --enable-readline \
+       --enable-shared-js \
+       --disable-jemalloc  \
+       --enable-tests
+
+  make
+}  
+  
 package() {
-  cd mozjs${pkgver}/js/src
+  cd obj
+  #cd mozjs-${_pkgver}gnome1/js/src
   make DESTDIR=${pkgdir} install
+  
+  rm ${pkgdir}/usr/lib/libjs_static.ajs
 
   find ${pkgdir}/usr/{lib/pkgconfig,include} -type f -exec chmod -x {} +
 }

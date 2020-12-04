@@ -1,0 +1,34 @@
+
+# colord GUI vs Oyranus GUI https://www.freedesktop.org/software/colord/faq.html#oyranos
+
+pkgname=colord-kde
+pkgver=0.5.0
+pkgrel=2
+_commit=27342ffafcefd363eda0b8d0b1706d7898cf9fc5
+pkgdesc="Daemon that manages color profiles, including a KCM that manages colord profiles"
+url='https://dantti.wordpress.com/2012/03/12/coloring-you-desktop-with-colord-kde/'
+arch=('x86_64')
+license=('GPL')
+depends=('colord' 'libxrandr' 'kconfigwidgets' 'kcoreaddons' 'kdbusaddons' 'ki18n'
+         'kcmutils' 'kwidgetsaddons' 'kwindowsystem')
+makedepends=('extra-cmake-modules')
+groups=('color')
+source=("https://github.com/KDE/colord-kde/archive/${_commit}.zip")
+md5sums=('fd88d3ac89459dea60380271622c2ec0')
+
+
+build() {
+  mkdir -p build
+  cd build
+  
+  cmake ../${pkgname}-${_commit} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  make
+}
+
+package() {
+  cd build
+  
+  make DESTDIR=${pkgdir} install
+}

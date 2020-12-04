@@ -1,0 +1,28 @@
+
+pkgname=mystiq
+_pkgname=MystiQ
+pkgver=20.03.23
+pkgrel=1
+pkgdesc="FFmpeg GUI front-end based on Qt5."
+arch=('x86_64')
+url="https://mystiqapp.com/"
+license=('GPL3')
+depends=('qt5-declarative' 'qt5-multimedia' 'ffmpeg' 'libnotify' 'sox')
+makedepends=('qt5-tools')
+replaces=('qwinff')
+source=("https://github.com/swl-x/MystiQ/archive/v${pkgver}.tar.gz")
+md5sums=('d6e3babb0be21ae7592f4c313cc6edac')
+
+build() {
+   cd ${_pkgname}-${pkgver}
+
+   /usr/lib/qt5/bin/qmake DEFINES+=NO_NEW_VERSION_CHECK mystiq.pro
+   make
+}
+
+package() {
+   cd ${_pkgname}-${pkgver}
+
+   make INSTALL_ROOT=${pkgdir} install
+   install -Dm644 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+}

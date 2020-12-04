@@ -1,31 +1,33 @@
  
 pkgname=lightworks
-pkgver=12.6.0
-_pkgver=12.6.0
+pkgver=2020.1.1
+_pkgver=2020.1.1_r124942
+_beta=114863
 pkgrel=1
 pkgdesc="A professional video editing software"
 arch=('x86_64')
-url="http://www.lwks.com/"
+url="https://www.lwks.com/"
 license=('custom')
 install="${pkgname}.install"
-depends=('gtk3' 'portaudio-svn' 'libgl' 'glu' 'ffmpeg' 'libedit' 'libtiff' 'nvidia-cg-toolkit' 'libgsf')
-source=("lwks-${_pkgver}-amd64.deb")
-md5sums=('72962cdeb22de8225b38452c8602f21b')
+depends=('gtk3' 'libgl' 'glu' 'ffmpeg' 'libedit' 'libtiff' 'nvidia-cg-toolkit' 'libgsf')
+optdepends=('kde-gtk-config: gtk integration settings for Plasma')
+source=("https://cdn.lwks.com/releases/${pkgver}/lightworks_${_pkgver}.deb")
+md5sums=('3023afe2f271eda40ca2a439affcaa75')
 
 noextract=("lwks-${pkgver}-amd64.deb")
  
 package() {
-  bsdtar -xf "lwks-${_pkgver}-amd64.deb" data.tar.gz  
-  bsdtar -xf data.tar.gz -C "${pkgdir}"
-	rm data.tar.gz
+  #bsdtar -xf "lwks-${_pkgver}-amd64.deb" data.tar.xz  
+  bsdtar -zxf data.tar.xz -C "${pkgdir}"
+	#rm data.tar.xz
   
-  mv -f "${pkgdir}/lib/udev" "${pkgdir}/usr/lib"
-  rmdir "${pkgdir}/lib"
+  mv -f ${pkgdir}/lib/udev ${pkgdir}/usr/lib
+  rmdir ${pkgdir}/lib
   #fix icon path in .desktop file
   sed -i 's|Icon=/usr/share/lightworks/Icons/App.png|Icon=lightworks|' \
-   "${pkgdir}/usr/share/applications/lightworks.desktop"
+   ${pkgdir}/usr/share/applications/lightworks.desktop
   
-  mkdir -p "${pkgdir}/usr/share/licenses/lightworks/"
-  mv -f "${pkgdir}/usr/share/doc/lightworks/copyright" "${pkgdir}/usr/share/licenses/lightworks/"
-  rm -rf "${pkgdir}/usr/share/doc"
+  mkdir -p ${pkgdir}/usr/share/licenses/lightworks/
+  mv -f ${pkgdir}/usr/share/doc/lightworks/copyright ${pkgdir}/usr/share/licenses/lightworks/
+  rm -rf ${pkgdir}/usr/share/doc
 }

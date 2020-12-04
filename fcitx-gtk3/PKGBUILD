@@ -1,0 +1,35 @@
+
+pkgname=fcitx-gtk3
+_pkgname=fcitx
+pkgver=4.2.9.8
+pkgrel=2
+pkgdesc="A Flexible Input Method Framework"
+arch=('x86_64')
+license=('GPL')
+url="https://fcitx-im.org/wiki/Fcitx"
+depends=('fcitx' 'gtk3' 'gtk-update-icon-cache')
+makedepends=('extra-cmake-modules' 'doxygen' 'gobject-introspection')
+groups=('localization')
+install=${pkgname}.install
+source=("https://download.fcitx-im.org/${_pkgname}/${_pkgname}-${pkgver}_dict.tar.xz")
+md5sums=('fbd1d76ce81353f003dffb73053b4803')
+
+build() {
+  mkdir -p build
+  cd build
+  
+  cmake ../${_pkgname}-${pkgver} \
+      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DENABLE_QT=OFF \
+      -DENABLE_GTK2_IM_MODULE=OFF \
+      -DENABLE_GTK3_IM_MODULE=ON
+  make
+}
+
+package(){
+    cd build/src/frontend/gtk3
+    
+    make DESTDIR=$pkgdir install
+}
+

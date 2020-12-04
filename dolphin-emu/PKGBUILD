@@ -1,39 +1,40 @@
 
+# build version at https://dolphin-emu.org/download/
 pkgname=dolphin-emu
-pkgver=5.0
-pkgrel=3
-_commit=dbd67c6
+pkgver=5.0.13170
+pkgrel=1
+_commit=5abae61a8c7e0e4ac03bb8d3031793037e87fdd3
 pkgdesc='GameCube, Wii and Triforce emulator'
 arch=('x86_64')
-url='http://dolphin-emu.org'
+url='https://dolphin-emu.org'
 license=('GPL2')
-depends=('bluez' 'ffmpeg' 'glew' 'libao' 'miniupnpc' 'openal' 'portaudio'
-         'sdl2' 'soundtouch' 'qt5-base' 'pulseaudio' 'gtk2' 'glu')
-makedepends=('cmake' 'opencl-headers')
-#source=("https://github.com/dolphin-emu/dolphin/tarball/master/${pkgname}-${pkgver}.tar.gz")
-source=("https://github.com/dolphin-emu/dolphin/archive/${pkgver}.tar.gz")
-md5sums=('ed94272956adbec690808f6e4d8ff065')
+depends=('bluez' 'ffmpeg' 'libao' 'mbedtls' 'miniupnpc' 'openal' 'portaudio'
+         'libevdev' 'soundtouch' 'qt5-base' 'pulseaudio' 'vulkan-loader')
+makedepends=('cmake')
+source=("https://github.com/dolphin-emu/dolphin/archive/${_commit}.zip")
+#source=("https://github.com/dolphin-emu/dolphin/archive/${pkgver}.tar.gz")
+md5sums=('ae6a557249e36036a1ed5624b96f65f5')
          
 build() {
-  cd dolphin-${pkgver}
-
-  mkdir build 
+  mkdir -p build 
   cd build
-  cmake .. -DCMAKE_INSTALL_PREFIX=/usr \
-           -DCMAKE_CXX_FLAGS='-fno-inline-functions -fpermissive' \
-           -DENABLE_LTO=ON \
-           -DENABLE_QT2=ON
-           #-DDISABLE_WX=ON 
+  
+  cmake ../dolphin-${_commit}\
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=/usr/lib \
+    -DENABLE_QT2=ON \
+    -DENABLE_WX=OFF \
+    -DUSE_EGL=ON \
+    -DDISTRIBUTOR=KaOS
   make
 }
 
 package() {
-  cd dolphin-${pkgver}/build
+  cd build
 
   make DESTDIR=${pkgdir} install
   
-  #install -m 755 Binaries/dolphin-emu-qt2 ${pkgdir}/usr/bin/
-  #sed -i -e 's|Exec=dolphin-emu|Exec=dolphin-emu-qt|' ${pkgdir}/usr/share/applications/dolphin-emu.desktop
+  install -D -m644 ../dolphin-${_commit}/Data/51-usb-device.rules -t ${pkgdir}/usr/lib/udev/rules.d/
 }
 
 

@@ -1,53 +1,39 @@
 
 pkgname=liri-browser
-pkgver=0.3.12
-_commit=b2f3e3a6634583b3c7e33386b2f4ec2c776c4ec8
+pkgver=1.2.0
+_commit=b0dccff5204e71d53525c6f52d918b3530f16874
 pkgrel=1
 pkgdesc="Cross-platform material design web browser"
 url="https://github.com/lirios/browser"
 arch=('x86_64')
-license=('LGPL')
-depends=('qtwebengine' 'qt5-multimedia' 'fluid' 'slime-engine')
-source=("https://github.com/lirios/browser/archive/${_commit}.zip"
-        "https://github.com/lirios/lirios.github.io/raw/master/images/logo-100.png"
-        'liri-browser.desktop')
-md5sums=('6c5d28a2f5024ff7340b0135e63318ca'
-         '6ab30e7a852ee94011735507db62a957'
-         '532df3c09336cd38c6dcabe66a43de14')
-
-prepare() {
-  cd browser-${_commit}
-  
-  sed -i -e 's|target.path = /opt/$${TARGET}/bin|target.path = /usr/bin|' deployment/deployment.pri
-  #sed -i -e 's|target.path=/opt/liri-browser-build|target.path=/usr/bin|' ${srcdir}/${pkgname}/liri-browser.pro
-  #sed -i -e 's|property bool darkTheme: true|property bool darkTheme: false|' ${srcdir}/${pkgname}/src/qml/BaseApplication.qml
-  #KaOS colors
-  #sed -i -e 's|primaryColor: "#F44336"|primaryColor: "#31A3DD"|' ${srcdir}/${pkgname}/src/qml/BrowserWindow.qml
-  #sed -i -e 's|primaryDarkColor: "#D32F2F"|primaryDarkColor: "#2397D2"|' ${srcdir}/${pkgname}/src/qml/BrowserWindow.qml
-  #sed -i -e 's|accentColor: "#FF5722"|accentColor: "#31A3DD"|' ${srcdir}/${pkgname}/src/qml/BrowserWindow.qml
-  #sed -i -e 's|darkThemeColor : "#f3f3f3"|darkThemeColor : "#CCCCCC"|' ${srcdir}/${pkgname}/src/qml/BrowserWindow.qml
-  #sed -i -e 's|lightThemeColor: "#FAFAFA"|lightThemeColor: "#E8EFF7"|' ${srcdir}/${pkgname}/src/qml/BaseApplication.qml
-}
+license=('GPLv3')
+depends=('qtwebengine' 'qt5-multimedia' 'fluid' 'qt5-svg' 'qt5-location')
+makedepends=('cmake-shared' 'qt5-tools')
+source=("https://github.com/lirios/browser/archive/${_commit}.zip")
+#source=("git://github.com/lirios/browser.git")
+groups=('network-web')
+md5sums=('f1ff98efdcd919e6a094bdb6ef2cedc9')
 
 build() {
-   mkdir -p build
-   cd build
-
-   /usr/lib/qt5/bin/qmake CONFIG+=QTWEBENGINE_ENABLED ../browser-${_commit}/liri-browser.pro
-   make
+    mkdir - build
+    cd build
+    
+    cmake ../browser-${_commit} \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DBUILD_TESTING:BOOL=OFF \
+        -DINSTALL_SYSCONFDIR=/etc \
+        -DINSTALL_LIBDIR=/usr/lib \
+        -DINSTALL_LIBEXECDIR=/usr/lib \
+        -DINSTALL_QMLDIR=/usr/lib/qt5/qml \
+        -DINSTALL_PLUGINSDIR=/usr/lib/qt5/plugins
+  make
 }
 
 package() {
-   cd build
-   make INSTALL_ROOT=${pkgdir} install
-   
-   mkdir -p ${pkgdir}/usr/share/applications
-
-   #  install -Dm644 icons/liri-browser.png ${pkgdir}/usr/share/icons/hicolor/$i/apps/liri-browser.png
-   #for i in 16x16 22x22 32x32 48x48 64x64 128x128 256x256; do
-   install -Dm644 ${srcdir}/logo-100.png ${pkgdir}/usr/share/icons/hicolor/64x64/apps/liri-browser.png
-   #done
+  cd build
   
-  install -m755 ${srcdir}/liri-browser.desktop ${pkgdir}/usr/share/applications/liri-browser.desktop
-  #rm ${pkgdir}/usr/bin/liri-browser.desktop
+  make DESTDIR=${pkgdir} install
+  
+  install -Dm644 ../browser-${_commit}/LICENSE.GPLv3 ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.GPLv3
 }

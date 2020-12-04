@@ -1,24 +1,23 @@
 
 pkgname=mkvtoolnix
-pkgver=9.5.0
+pkgver=51.0.0
 pkgrel=1
 pkgdesc="Set of tools to create, edit and inspect Matroska files."
 arch=('x86_64')
 license=('GPL')
-url="http://www.bunkus.org/videotools/mkvtoolnix/index.html"
-depends=('flac' 'libmatroska' 'libogg' 'libvorbis' 'qt5-declarative' 'xdg-utils' 'libebml' 'zlib' 'boost-libs')
-optdepends=('flac: for FLAC support (Free Lossless Audio Codec)'
-            'lzo2: for additional compression capabilities'
-            'bzip2: for additional compression capabilities'
-            'file: for automatic content type detection'
-            'curl: for online update checks')
-makedepends=('gcc' 'boost' 'ruby') 
+url="https://mkvtoolnix.download/index.html"
+depends=('flac' 'libmatroska' 'libogg' 'libvorbis' 'qt5-declarative' 'xdg-utils'
+         'libebml' 'zlib' 'boost-libs' 'bzip2' 'curl' 'lzo2' 'qt5-multimedia' 'cmark')
+makedepends=('gcc' 'boost' 'ruby') # 'clang') 
 groups=('multimedia')
 source=("https://mkvtoolnix.download/sources/${pkgname}-${pkgver}.tar.xz")
-md5sums=('565ba79a494ed25f18840be9bebbd45f')
+sha512sums=('2e91b039dbcab9afbad29c6c8e66ac305b2518319f68301a34a909fdffb02305025106368d4338abf148be5af4adfebab2eb1b5ccf0c9c0b0cef8f9e6e58a26e')
 
 build() {
   cd ${pkgname}-${pkgver}
+  
+  #export CC=/usr/bin/clang
+  #export CXX=/usr/bin/clang++
   
   ./configure --prefix=/usr --with-boost-libdir=/usr/lib
   rake

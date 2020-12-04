@@ -1,15 +1,17 @@
 
 pkgname=fcitx-qt5
-pkgver=1.0.6
-pkgrel=1
+pkgver=1.2.5
+_commit=af033e3d5305108eecc568adff7f8b2da5831ed6
+pkgrel=2
 pkgdesc="QT5 IM Module for Fcitx"
 arch=('x86_64')
-url="http://code.google.com/p/fcitx"
+url="https://github.com/fcitx/fcitx-qt5"
 license=('GPL')
 depends=('fcitx' 'qt5-base')
 makedepends=('extra-cmake-modules')
 source=("https://download.fcitx-im.org/${pkgname}/${pkgname}-${pkgver}.tar.xz")
-md5sums=('0a249121426becfe19168b1600dca7d9')
+#source=("https://github.com/fcitx/fcitx-qt5/archive/${_commit}.zip")
+md5sums=('86ffe64ea96458f38b4aa1e8998da1c4')
 
 build() {
   mkdir -p build

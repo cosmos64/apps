@@ -7,32 +7,33 @@ pkgver=${_plasmaver}
 pkgrel=1
 pkgdesc='KSysGuard is a program to monitor various elements of your system'
 arch=('x86_64')
-url='https://github.com/KDE/ksysguard'
+url='https://invent.kde.org/plasma/ksysguard'
 license=('LGPL')
-depends=('kcoreaddons' 'kconfig' 'ki18n' 'kiconthemes' 'knewstuff' 'kdelibs4support' 'libksysguard' 'lm_sensors')
+depends=('kconfig' 'kcoreaddons' 'kdbusaddons' 'ki18n' 'kiconthemes' 'kinit' 'kitemviews' 'kio'
+         'knewstuff' 'knotifications' 'kwindowsystem' 'libksysguard' 'lm_sensors')
 makedepends=('extra-cmake-modules' 'kdoctools')
-groups=('plasma5')
-#source=("http://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz")
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz")
+groups=('kdeplasma5')
+source=("https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz"
+        "https://invent.kde.org/plasma/ksysguard/-/commit/5391f4def701629ffbb2d0b20ef92af2fec7c313.diff")
 # grep md5 picks up libksysguard too
-md5sums=('4de5128974bf556efe714ede3465fe03')
+md5sums=('fd1267064fa9b085934cbe3f1e5aade7'
+         '74c6458fa3e2af55fa043c6eac5da1c4')
 
 prepare() {
-  cd ${pkgname}-${__pkgver}
+  cd ${pkgname}-${pkgver}
   #sed -i -e 's/Kdcraw/KF5KDcraw/' ${srcdir}/${pkgname}-${pkgver}/CMakeLists.txt
-  #patch -p1 -i $srcdir/kdbus.diff
-  
+  #patch -p1 -i $srcdir/5391f4def701629ffbb2d0b20ef92af2fec7c313.diff
 }
 
 build() {
   mkdir -p build
   cd build
   
-  cmake ../${pkgname}-${__pkgver} \
+  cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_INSTALL_DIR=lib \
-    -DSYSCONF_INSTALL_DIR=/etc \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
     -DBUILD_TESTING=OFF
   make
@@ -40,7 +41,7 @@ build() {
 
 package() {
   cd build
-
-  make DESTDIR="${pkgdir}" install
+  
+  make DESTDIR=${pkgdir} install
 }
 

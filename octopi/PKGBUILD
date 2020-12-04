@@ -1,63 +1,51 @@
 
 pkgname=octopi
-pkgver=0.8.96
+pkgver=0.10.82
 pkgrel=1
-_commit=0cff45f88c4b41decda6a35a8435c10d29c06a6b
+_commit=590c4143e1e041cab83110c3cd1ce1904ce5e44b
 pkgdesc="This is Octopi, a powerful Pacman frontend using Qt libs"
-url="https://octopiproject.wordpress.com/"
+url="https://tintaescura.com/projects/octopi/"
 arch=('x86_64')
 license=('GPL2')
-depends=('qt5-quickcontrols' 'pacman' 'pkgfile' 'knotifications' 'gist' 'alpm_octopi_utils')
+depends=('pacman' 'pacman-contrib' 'pkgfile' 'knotifications' 'alpm_octopi_utils' 'qtermwidget' 'sudo')
+makedepends=('qt5-tools' 'cmake')
 groups=('system')
 #install=octopi.install
 source=("https://github.com/aarnt/octopi/archive/${_commit}.zip"
-        "images2.tar.xz")
-md5sums=('a31049c302dac7166bdef4b65a73418a'
-         '858db0982326bcbc77526a7945d35bc7')
+        "images3.tar.xz"
+        'folder_tree.png'
+        'searchlineedit.diff')
+md5sums=('0fe80b84a798fce87da7674c810eb98d'
+         '09decb09a2fa58f2211ff3d5e0350ff0'
+         'eff9d31629ad8de08c9198524f798bd3'
+         '79be301d683ccd8572db0571f868298c')
 
 prepare() {
    cd ${pkgname}-${_commit}/
    rm -r resources/images
    mv -iv ${srcdir}/images/ resources/
    cp resources/images/octopi_green.png resources/images/octopi.png
+   cp ${srcdir}/folder_tree.png resources/images/folder_tree.png
 
    # enable the kstatus switch
-   sed -e "s|#KSTATUS|KSTATUS|" -i notifier/octopi-notifier/octopi-notifier.pro
+   sed -e "s|#KSTATUS|KSTATUS|" -i notifier/octopi-notifier.pro
+   sed -e "s|gui network|gui network dbus|" -i notifier/octopi-notifier.pro
+   
+   sed -e "s|pacman -U --force|pacman -U|" -i src/pacmanexec.cpp
+   
+   # show correct text for SysInfo window
+   sed -e "s|mhwd -li -d|installation.log|" -i src/strconstants.cpp
+   sed -e "s|head --bytes=256K /var/log/pacman.log|/var/log/pacman.log|" -i src/strconstants.cpp
 }
          
 build() {
-   cd ${pkgname}-${_commit}
-   
-   /usr/lib/qt5/bin/qmake octopi.pro
-   make
-   
-   cd notifier/pacmanhelper
-   /usr/lib/qt5/bin/qmake pacmanhelper.pro
-   make
-   cd ../..
-   
-   cd notifier/octopi-notifier
-   /usr/lib/qt5/bin/qmake octopi-notifier.pro
-   make
-   cd ../..
-   
-   cd cachecleaner
-   /usr/lib/qt5/bin/qmake octopi-cachecleaner.pro
-   make
+  cmake -B build -S ${pkgname}-${_commit} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
 }
 
 package() {
-   cd ${pkgname}-${_commit}
-   make INSTALL_ROOT=${pkgdir} install
-   
-   cd notifier/pacmanhelper
-   make INSTALL_ROOT=${pkgdir} install
-   cd ../..
-   
-   cd notifier/octopi-notifier
-   make INSTALL_ROOT=${pkgdir} install
-   cd ../..
-   
-   cd cachecleaner
-   make INSTALL_ROOT=${pkgdir} install
+
+  DESTDIR=${pkgdir} cmake --install build
 }

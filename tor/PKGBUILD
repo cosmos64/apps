@@ -1,20 +1,20 @@
 
 pkgname=tor
-pkgver=0.2.8.9
+pkgver=0.4.4.6
 pkgrel=1
 pkgdesc='Open network that helps you defend against traffic analysis, a form of network surveillance that threatens personal freedom and privacy.'
 arch=('x86_64')
-url='http://www.torproject.org/'
+url='https://www.torproject.org/'
 license=('BSD')
-depends=('openssl' 'libevent' 'bash' 'libseccomp')
+depends=('openssl' 'libevent' 'bash' 'libseccomp' 'zstd')
 makedepends=('ca-certificates')
 backup=('etc/tor/torrc'
         'etc/tor/torrc-dist')
 install='tor.install'
-source=("https://www.torproject.org/dist/${pkgname}-${pkgver}.tar.gz"
+source=("https://dist.torproject.org/${pkgname}-${pkgver}.tar.gz"
         'torrc'
         'tor.service')
-md5sums=('e1f8bc2b2e2b365fc916388304e5e40d'
+md5sums=('3635b2f7b6645910bf702ce8eaeffd0d'
          'a63a553384d825a05ca052fdfadc7d08'
          '64114b508cbe987ade03e8814540a9d4')
 

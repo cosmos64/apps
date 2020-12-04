@@ -1,0 +1,33 @@
+
+pkgname=appmenu-gtk-module
+pkgver=0.7.6
+_pkgver=0.7.6
+_commit=e0b6a32a340922cd05060292b0757162
+pkgrel=1
+pkgdesc="Small GTK Module that strips menus from all GTK programs, converts to MenuModel and send to AppMenu."
+arch=('x86_64')
+url="https://gitlab.com/vala-panel-project/vala-panel-appmenu"
+license=('GPL')
+depends=('gtk2' 'gtk3')
+makedepends=('meson' 'ninja')
+source=("https://gitlab.com/vala-panel-project/vala-panel-appmenu/uploads/${_commit}/${pkgname}-${_pkgver}.tar.xz"
+        '80-appmenu-gtk-module')
+md5sums=('c1c9e6170a6b03b7d7b4ecf59864f458'
+         'eef92e41f9e4c2ea16c0d706cc511540')
+
+build() {
+    mkdir -p build
+    cd build
+
+    meson ../${pkgname} \
+        --prefix=/usr \
+        --buildtype=release 
+    ninja
+}
+
+package() {
+    cd build
+
+    DESTDIR=${pkgdir} ninja install
+    install -Dm755 ../80-appmenu-gtk-module ${pkgdir}/etc/X11/xinit/xinitrc.d/80-appmenu-gtk-module
+}

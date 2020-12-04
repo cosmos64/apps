@@ -10,19 +10,21 @@ arch=('x86_64')
 url='https://projects.kde.org/projects/kde/applications/kate'
 license=('LGPL')
 depends=('kconfig' 'kguiaddons' 'ki18n' 'kjobwidgets' 'kitemmodels' 'threadweaver'
-         'kio' 'knewstuff' 'kparts' 'ktexteditor' 'kwindowsystem' 'kxmlgui' 'plasma-framework')
+         'kio' 'knewstuff' 'kparts' 'ktexteditor' 'kwindowsystem' 'kxmlgui'
+         'plasma-framework' 'kuserfeedback')
 makedepends=('extra-cmake-modules' 'kdoctools')
-conflicts=('kdesdk-kate' 'kdesdk-kate-debug')
-replaces=('kdesdk-kate' 'kdesdk-kate-debug')
-provides=('kdesdk-kate')
+conflicts=('kdesdk-kate' 'kdesdk-kate-debug' 'ktexteditorpreviewplugin')
+replaces=('kdesdk-kate' 'kdesdk-kate-debug' 'ktexteditorpreviewplugin')
+provides=('kdesdk-kate' 'ktexteditorpreviewplugin')
 source=("$_mirror/${pkgname}-${pkgver}.tar.xz"
-        '5.17.patch')
+        "https://invent.kde.org/utilities/kate/commit/d679aca69c946c21a5bfa7ca1eb4e146ea90d139.diff")
 md5sums=(`grep ${pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`
-         'ec696effc50f0e2847a339cd0157361e')
+         'dea8f5217586297ff61080c5a38868d7')
 
 prepare() {
   cd $pkgname-${pkgver}
-  #patch -p1 -i ${srcdir}/5.17.patch
+  # 20.08 issue with menu disappearing 
+  #patch -p1 -i ${srcdir}/d679aca69c946c21a5bfa7ca1eb4e146ea90d139.diff
 }
 
 build() {
@@ -32,10 +34,10 @@ build() {
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DSYSCONF_INSTALL_DIR=/etc \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-    -DLIB_INSTALL_DIR=lib
+    -DKDE_INSTALL_LIBDIR=lib
   make
 }
 

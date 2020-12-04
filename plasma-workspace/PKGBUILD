@@ -9,32 +9,39 @@ pkgdesc='Provides the interface and basic tools for the KDE Plasma Workspace'
 arch=('x86_64')
 url='https://projects.kde.org/projects/kde/workspace/plasma-workspace'
 license=('LGPL')
-depends=('frameworkintegration' 'kcmutils' 'knotifyconfig' 'krunner' 'kdesu' 'knewstuff' 'khtml'
-         'libdbusmenu-qt5' 'glu' 'kjsembed' 'libxkbfile' 'libxcursor' 'lm_sensors' 'libraw1394'
-         'libusb' 'pciutils' 'libbsd' 'kf5-attica' 
-         'kemoticons' 'libxrandr' 'kded' 'kwin' 'libksysguard' 'ktexteditor' 'kde-cli-tools'
+depends=('frameworkintegration' 'knotifyconfig' 'krunner' 'kdesu' 'knewstuff' 
+         'libdbusmenu-qt5' 'glu' 'libxkbfile' 'libxcursor' 'lm_sensors' 'libraw1394'
+         'libusb' 'pciutils' 'libbsd' 'kf5-attica' 'kdelibs4support'
+         'kemoticons' 'libxrandr' 'kded' 'kwin' 'libksysguard' 'ktexteditor'
          'khelpcenter' 'kio-extras' 'baloo' 'milou' 'libkscreen' 'breeze' 'gpsd' 'libqalculate' 'qt5-tools'
-         'qimageblitz' 'oxygen-icons' 'prison' 'sddm-kcm' 'networkmanager-qt' 'kxmlrpcclient' 'kscreenlocker'
-         'kactivitymanagerd' 'iso-codes' 'kholidays' 'plasma-l10n')
+         'oxygen-icons5' 'prison' 'sddm-kcm' 'networkmanager-qt' 'kxmlrpcclient' 'kscreenlocker'
+         'kactivitymanagerd' 'kpeople' 'kactivities-stats' 'iso-codes' 'kholidays' 'drkonqi' 'kuserfeedback'
+         'kquickcharts' 'pipewire')
 makedepends=('extra-cmake-modules' 'kdoctools' 'boost')
-groups=('plasma5')
+conflicts=('plasma-l10n')
+replaces=('plasma-l10n')
+provides=('plasma-l10n')
+groups=('kdeplasma5')
 options=('debug')
-#source=("http://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz"
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz"
+source=("https://download.kde.org/unstable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz"
+#source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz"
         '10-kf5'
         'kde.pam'
         'kde-np.pam'
-        'kscreensaver.pam')
-md5sums=(`grep ${pkgname}-${_plasmaver}.tar.gz ../kf5.md5 | cut -d" " -f1`
-         'd102c44c3bddf29f6d440d1d582d4433'
+        'kscreensaver.pam'
+        "https://invent.kde.org/plasma/plasma-workspace/commit/e3134289f522edb140797818fffd60d641b86cd8.diff")
+md5sums=(`grep ${pkgname}-${_plasmaver}.tar.xz ../kf5.md5 | cut -d" " -f1`
+         '280f3ca356b59607074da2343a4155b2'
          '6589fb28bd20d5ec1b4a7b9db9fc4209'
          '5a035421a9bfaa353caf04250c2b285c'
-         '367a3538f54db71f108b34cfa31088ac')
+         '367a3538f54db71f108b34cfa31088ac'
+         'd94f8514888081a580966af595ad9981')
 
 prepare () {
-  cd ${pkgname}-${__pkgver}
-  #patch -p1 -i $srcdir/start.diff
-  sed -i 's|find_package(KF5Prison ${KF5_MIN_VERSION})|find_package(KF5Prison 1.2.2)|' klipper/CMakeLists.txt
+  cd ${pkgname}-${pkgver}
+  
+  #patch -p1 -i ${srcdir}/e3134289f522edb140797818fffd60d641b86cd8.diff
+  #sed -i 's|org.kde.breeze.desktop|org.kde.midna.desktop|' shell/packageplugins/lookandfeel/lookandfeel.cpp
   sed -i 's|<default>1</default>|<default>2</default>|' applets/systemtray/package/contents/config/main.xml
 }         
          
@@ -42,7 +49,7 @@ build() {
   mkdir -p build
   cd build
   
-  cmake ../${pkgname}-${__pkgver} \
+  cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DKDE_INSTALL_LIBDIR=lib \
@@ -57,12 +64,10 @@ build() {
 
 package() {
   cd build
-  make DESTDIR="${pkgdir}" install
+  make DESTDIR=${pkgdir} install
   
-  sed 's|qtpaths|qtpaths-qt5|' -i $pkgdir/usr/bin/startkde
-  sed 's|qtpaths|qtpaths-qt5|' -i $pkgdir/usr/bin/startplasmacompositor
-  #enable if/when startkde qdbus changes move to 5.8
-  #sed 's|qdbu|qdbus-qt5|' -i $pkgdir/usr/bin/startkde
+  #sed 's|qdbus|qdbus-qt5|' -i $pkgdir/usr/bin/startplasmacompositor
+  #sed 's|qdbus|qdbus-qt5|' -i $pkgdir/usr/lib/startplasma
   
   install -Dm755 ${srcdir}/10-kf5 ${pkgdir}/etc/X11/xinit/xinitrc.d/10-kf5
   

@@ -1,0 +1,41 @@
+
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+ 
+pkgname=qqc2-desktop-style
+pkgver=${_kf5ver}
+pkgrel=2
+pkgdesc='QtQuickControls 2 style that uses QWidget QStyle for painting.'
+arch=('x86_64')
+url='https://github.com/KDE/qqc2-desktop-style'
+license=('LGPL')
+depends=('qt5-quickcontrols2' 'kirigami' 'kiconthemes' 'kconfigwidgets' 'qt5-x11extras')
+makedepends=('extra-cmake-modules')
+source=("https://download.kde.org/stable/frameworks/5.46/${pkgname}-${pkgver}.tar.xz")
+md5sums=(`grep ${pkgname}-${_kf5ver}.tar.xz ../kf5.md5 | cut -d" " -f1`)
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+
+  #patch -p1 -i ${srcdir}/gallery.diff
+}
+
+build() {
+  mkdir -p build
+  cd build
+  
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_LIBEXECDIR=lib \
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
+    -DBUILD_TESTING=OFF     
+  make
+}
+
+package() {
+  cd build
+  
+  make DESTDIR=${pkgdir} install
+}

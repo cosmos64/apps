@@ -10,35 +10,32 @@ arch=('x86_64')
 url='https://github.com/KDE/plasma-integration'
 license=('LGPL')
 depends=('kconfig' 'kconfigwidgets' 'ki18n' 'kiconthemes' 'kio' 'knotifications' 'kwidgetsaddons'
-         'kwayland' 'noto-fonts' 'breeze' 'ttf-hack')
+         'kwayland' 'noto-fonts' 'breeze' 'ttf-hack' 'qt5-quickcontrols2' 'qqc2-desktop-style')
 makedepends=('extra-cmake-modules')
-groups=('plasma5')
-#source=("http://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz"
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz"
-        "https://github.com/KDE/plasma-integration/commit/4240c588aa3c2643d8d00a0da562197f1784cad6.diff")
-md5sums=(`grep ${pkgname}-${_plasmaver}.tar.gz ../kf5.md5 | cut -d" " -f1`
-         'ce12e54584b1f54dd41a768520f0dc61')
+groups=('kdeplasma5')
+source=("https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz"
+#source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz"
+        'fix_switched_open_save.patch')
+md5sums=(`grep ${pkgname}-${_plasmaver}.tar.xz ../kf5.md5 | cut -d" " -f1`
+         '07517f31cddac433f5bfdbaff7eb506f')
 
 prepare () {
-  cd ${pkgname}-${__pkgver}
-  # patch by frugalware to fix reading from default lnf package
-  #patch -p1 -i ${srcdir}/4240c588aa3c2643d8d00a0da562197f1784cad6.diff
+  cd ${pkgname}-${pkgver}
+  #patch -p1 -i ${srcdir}/fix_switched_open_save.patch
 }
   
 build () {  
   mkdir -p build
   cd build
   
-  cmake ../${pkgname}-${__pkgver} \
+  cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DKDE_INSTALL_LIBDIR=lib \
     -DKDE_INSTALL_QMLDIR=/usr/lib/qt5/qml \
     -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-    -DBUILD_TESTING=OFF \
-    -DCMAKE_DISABLE_FIND_PACKAGE_FontNotoSans=false \
-    -DCMAKE_DISABLE_FIND_PACKAGE_FontHack=false
+    -DBUILD_TESTING=OFF 
   make
 }
 

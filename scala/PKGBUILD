@@ -1,17 +1,18 @@
 
 pkgname=scala
-pkgver=2.12.0
+pkgver=2.13.4
+_pkgver=2.13.4
 pkgrel=1
 pkgdesc="Acronym for Scalable Language, running on the JVM. Java and Scala classes"
 arch=('x86_64')
-url="http://www.scala-lang.org"
+url="https://www.scala-lang.org"
 license=('custom')
 depends=('sh' 'java-environment')
-source=("http://www.scala-lang.org/files/archive/scala-$pkgver.tgz")
-md5sums=('1c8dd76bf758fed4bb7f42004a70db35')
+source=("https://www.scala-lang.org/files/archive/scala-${_pkgver}.tgz")
+md5sums=('9703e440947b94795119ab3e04ff0e20')
 
 package() {
-  cd ${srcdir}/scala-${pkgver}
+  cd scala-${_pkgver}
 
   install -d ${pkgdir}/usr/{bin,share} ${pkgdir}/usr/share/man/man1 ${pkgdir}/usr/share/scala/{bin,lib}
   cp -r lib ${pkgdir}/usr/share/scala/

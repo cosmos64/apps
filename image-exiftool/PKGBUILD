@@ -1,17 +1,17 @@
 
-# only build local, server for unknown reasons does not follow perl install dir
 pkgname=image-exiftool
 _pkgname=Image-ExifTool
-pkgver=10.31
+pkgver=12.11
 pkgrel=1
 pkgdesc="Platform-independent Perl library plus a command-line application for reading, writing and editing meta information in a wide variety of files."
 arch=('x86_64')
-url="http://www.sno.phy.queensu.ca/~phil/exiftool/"
+url="https://exiftool.org/"
 license=('GPL')
-depends=('perl')
+# https://github.com/exiftool/exiftool/blob/master/README for recommended depends
+depends=('perl-archive-zip')
 options=('!emptydirs')
-source=("http://www.sno.phy.queensu.ca/~phil/exiftool/${_pkgname}-$pkgver.tar.gz")
-md5sums=('c0c2a09029401965284a35da7a877914')
+source=("https://exiftool.org/${_pkgname}-$pkgver.tar.gz")
+sha1sums=('cd75e0ec751dc408e98dbc45af543e03376c50c5')
 
 build() {
   cd ${_pkgname}-${pkgver}

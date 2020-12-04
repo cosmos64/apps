@@ -1,44 +1,44 @@
 
 pkgname=vtk
-pkgver=7.0.0
-_pkgver=7.0
-pkgrel=2
+pkgver=8.1.1
+_pkgver=8.1
+pkgrel=1
 pkgdesc='Open-source software system for 3D computer graphics, image processing, and visualization.'
 arch=('x86_64')
 url='https://gitlab.kitware.com/vtk/vtk'
 license=('BSD')
-depends=('java-environment' 'gnuplot' 'tk' 'python2-matplotlib' 'unixodbc' 'gdal' 'openmpi' 'mariadb'
-         'glew' 'gl2ps' 'ffmpeg' 'python2-six' 'qt5-tools' 'jsoncpp')
-makedepends=('boost' 'cmake')
+depends=('java-environment' 'gnuplot' 'tk' 'python3-matplotlib' 'unixodbc' 'gdal' 'openmpi' 'mariadb'
+         'glew' 'ffmpeg' 'python3-six' 'qtwebkit-tp' 'qt5-x11extras' 'jsoncpp')
+makedepends=('boost' 'cmake' 'qt5-tools')
 options=('!emptydirs')
-source=("http://www.vtk.org/files/release/${_pkgver}/VTK-${pkgver}.tar.gz"
-        "http://www.vtk.org/files/release/${_pkgver}/VTKData-${pkgver}.tar.gz"
-        "http://www.vtk.org/files/release/${_pkgver}/VTKLargeData-${pkgver}.tar.gz"
+source=("https://www.vtk.org/files/release/${_pkgver}/VTK-${pkgver}.tar.gz"
+        "https://www.vtk.org/files/release/${_pkgver}/VTKData-${pkgver}.tar.gz"
+        "https://www.vtk.org/files/release/${_pkgver}/VTKLargeData-${pkgver}.tar.gz"
         'gdal2.patch')
-md5sums=('5fe35312db5fb2341139b8e4955c367d'
-         'ee5c50794ec93758ec5812e4b6219599'
-         '86a4b223a0d224365c6b5d59a2246801'
+md5sums=('cf078a71c298c76b13707c7c27704248'
+         '6de8c1e3884b805c47dca02e7b049301'
+         '032c078450121f0cae9ffc501cf4569b'
          'e85edd330937a2395a233e0cb6be0b83')
 
 prepare() {
-  cd VTK-$pkgver
+  cd VTK-${pkgver}
 
-  patch -p1 -i ${srcdir}/gdal2.patch
+  #patch -p1 -i ${srcdir}/gdal2.patch
 }
 
 build() {
-  mkdir build
+  mkdir -p build
   cd build
 
   #export JAVA_HOME=/usr/lib/jvm/default
 
   # use system libs
   local cmake_system_flags=""
-  for lib in EXPAT FREETYPE JPEG PNG TIFF ZLIB OGGTHEORA SIX JSONCPP GLEW GL2PS; do
+  for lib in EXPAT FREETYPE JPEG PNG TIFF ZLIB OGGTHEORA SIX JSONCPP GLEW; do
     cmake_system_flags+="-DVTK_USE_SYSTEM_${lib}:BOOL=ON "
   done
 
-  cmake ../VTK-$pkgver \
+  cmake ../VTK-${pkgver} \
     -Wno-dev \
     -DCMAKE_SKIP_RPATH=ON \
     -DBUILD_SHARED_LIBS:BOOL=ON \
@@ -53,11 +53,13 @@ build() {
     -DVTK_QT_VERSION:STRING="5" \
     -DVTK_WRAP_JAVA:BOOL=ON \
     -DVTK_WRAP_PYTHON:BOOL=ON \
+    -DVTK_PYTHON_VERSION="3" \
     -DVTK_WRAP_TCL:BOOL=ON \
     -DCMAKE_CXX_FLAGS="-D__STDC_CONSTANT_MACROS" \
     -DVTK_CUSTOM_LIBRARY_SUFFIX="" \
     -DVTK_INSTALL_INCLUDE_DIR:PATH=include/vtk \
-    -DVTK_RENDERING_BACKEND="OpenGL" \
+    -DVTK_RENDERING_BACKEND="OpenGL2" \
+    -DVTK_USE_SYSTEM_GL2PS=OFF \
     ${cmake_system_flags} \
     -DCMAKE_BUILD_TYPE=Release 
 
@@ -67,16 +69,16 @@ build() {
 package() {
   cd build
 
-  make DESTDIR="${pkgdir}" install
+  make DESTDIR=${pkgdir} install
 
-  install -dv "${pkgdir}/usr/share/java/vtk"
-  mv -v "${pkgdir}/usr/lib/vtk.jar" "${pkgdir}/usr/share/java/vtk"
-  #rm -rf "${pkgdir}/usr/lib/vtk-${_pkgver}/java"
+  install -dv ${pkgdir}/usr/share/java/vtk
+  mv -v ${pkgdir}/usr/lib/vtk.jar ${pkgdir}/usr/share/java/vtk
+  #rm -rf ${pkgdir}/usr/lib/vtk-${_pkgver}/java
 
-  install -dv "${pkgdir}/usr/share/licenses/vtk"
-  install -m644 "${srcdir}/VTK-$pkgver/Copyright.txt" "${pkgdir}/usr/share/licenses/vtk"
+  install -dv ${pkgdir}/usr/share/licenses/vtk
+  install -m644 ${srcdir}/VTK-${pkgver}/Copyright.txt ${pkgdir}/usr/share/licenses/vtk
 
-  install -dv "${pkgdir}/usr/lib/qt5"
-  mv "$pkgdir"/usr/plugins "$pkgdir"/usr/lib/qt5/plugins
+  install -dv ${pkgdir}/usr/lib/qt5
+  mv ${pkgdir}/usr/plugins ${pkgdir}/usr/lib/qt5/plugins
 }
 

@@ -4,26 +4,25 @@ source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=kio
 pkgver=${_kf5ver}
-pkgrel=1
+pkgrel=2
 pkgdesc='Framework that implements almost all the file management functions you will ever need'
 arch=('x86_64')
-url='https://projects.kde.org/projects/frameworks/kio'
+url='https://invent.kde.org/frameworks/kio'
 license=('LGPL')
-depends=('karchive' 'kconfig' 'kcoreaddons' 'kdbusaddons' 'ki18n' 'kservice' 'solid'
+depends=('karchive' 'kconfig' 'kcoreaddons' 'kcrash' 'kdbusaddons' 'ki18n' 'kservice' 'solid'
          'kbookmarks' 'kcompletion' 'kconfigwidgets' 'kiconthemes' 'kitemviews' 'kjobwidgets'
-         'kwidgetsaddons' 'kwindowsystem' 'kwallet' 'knotifications' 'krb5' 'qt5-script')
-makedepends=('extra-cmake-modules' 'kdoctools')
+         'kwidgetsaddons' 'kwindowsystem' 'kauth' 'kwallet' 'knotifications' 'krb5' 'qt5-script')
+makedepends=('extra-cmake-modules' 'kdoctools' 'qt5-tools')
 groups=('kf5')
-source=("http://download.kde.org/stable/frameworks/5.20/${pkgname}-${pkgver}.tar.xz"
-        "https://github.com/KDE/kio/commit/fcbfb61a5304554483ceb49d8728d0e947a4af9e.diff")
-md5sums=(`grep ${pkgname}-$_kf5ver.tar.xz ../kf5.md5 | cut -d" " -f1`
-         '2aa102f0c8efd083ce47010af6c94ca8')
+source=("https://download.kde.org/stable/frameworks/5.74/${pkgname}-${pkgver}.tar.xz"
+        "https://invent.kde.org/frameworks/kio/-/commit/4321b8ff8ac7a8ffdea1068d8bbc734a0a34c0d0.diff")
+md5sums=(`grep ${pkgname}-${_kf5ver}.tar.xz ../kf5.md5 | cut -d" " -f1`
+         '0b4acd4ed3acb920154dc6481884aaf5')
 
 prepare() {
   cd ${pkgname}-${pkgver}
 
-  #patch -p1 -i ${srcdir}/fcbfb61a5304554483ceb49d8728d0e947a4af9e.diff
-  #sed -i -e 's|-caption=|-qwindowtitle|' src/core/desktopexecparser.cpp
+  #patch -p1 -i ${srcdir}/4321b8ff8ac7a8ffdea1068d8bbc734a0a34c0d0.diff
 }
          
 build() {

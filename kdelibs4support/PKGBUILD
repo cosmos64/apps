@@ -4,10 +4,10 @@ source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=kdelibs4support
 pkgver=${_kf5ver}
-pkgrel=1
+pkgrel=2
 pkgdesc='Provides code and utilities to ease the transition from kdelibs 4 to KDE Frameworks 5'
 arch=('x86_64')
-url='https://projects.kde.org/projects/frameworks/kde4support'
+url='https://invent.kde.org/frameworks/kdelibs4support'
 license=('LGPL')
 depends=('kcompletion' 'kconfigwidgets' 'kconfig' 'kcrash' 'kdesignerplugin' 'kglobalaccel' 'kguiaddons' 'ki18n'
          'kiconthemes' 'kio' 'knotifications' 'kparts' 'kservice' 'ktextwidgets' 'kunitconversion' 'kwidgetsaddons'
@@ -15,11 +15,11 @@ depends=('kcompletion' 'kconfigwidgets' 'kconfig' 'kcrash' 'kdesignerplugin' 'kg
          'libsm' 'networkmanager')
 makedepends=('extra-cmake-modules' 'kdoctools' 'qt5-tools' 'perl-uri')
 groups=('kf5')
-source=("http://download.kde.org/unstable/frameworks/${pkgver}/portingAids/${pkgname}-${pkgver}.tar.xz")
-md5sums=(`grep ${pkgname}-$_kf5ver.tar.xz ../kf5.md5 | cut -d" " -f1`)
+source=("https://download.kde.org/stable/frameworks/${pkgver}/portingAids/${pkgname}-${pkgver}.tar.xz")
+md5sums=(`grep ${pkgname}-${_kf5ver}.tar.xz ../kf5.md5 | cut -d" " -f1`)
 
 prepare() {
-  cd ${srcdir}/${pkgname}-${pkgver}
+  cd ${pkgname}-${pkgver}
   #sed -i -e 's|kded_networkstatus networkstatus.desktop SERVICE_TYPES kdedmodule.desktop|kded_networkstatus networkstatus.desktop|' src/solid-networkstatus/kded/CMakeLists.txt
 }
 
@@ -33,13 +33,14 @@ build() {
     -DKDE_INSTALL_LIBDIR=lib \
     -DKDE_INSTALL_LIBEXECDIR=lib \
     -DKDE_INSTALL_SYSCONFDIR=/etc \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DBUILD_TESTING=OFF
   make
 }
 
 package() {
   cd build
-  
-  make DESTDIR="${pkgdir}" install
+  make DESTDIR=${pkgdir} install
+  # conflicts with kio
+  #rm -r ${pkgdir}/usr/share/doc/HTML/*/kcontrol5
 }

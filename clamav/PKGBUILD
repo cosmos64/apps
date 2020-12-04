@@ -1,38 +1,44 @@
 
 pkgname=clamav
-pkgver=0.99.2
-pkgrel=2
+pkgver=0.103.0
+pkgrel=1
 pkgdesc='Anti-virus toolkit for Unix'
 arch=('x86_64')
-url='http://www.clamav.net/'
+url='https://www.clamav.net/'
 license=('GPL')
-depends=('bzip2' 'zlib' 'libtool')
+depends=('bzip2' 'zlib' 'libtool' 'json-c')
 options=('!libtool')
 install="$pkgname.install"
 groups=('system')
 backup=('etc/logrotate.d/clamav')
-source=("http://www.clamav.net/downloads/production/${pkgname}-${pkgver}.tar.gz"  
+source=("https://www.clamav.net/downloads/production/${pkgname}-${pkgver}.tar.gz"  
         'clamd.conf'
         'clamd.service'
         'freshclam.conf'
         'freshclamd.service'
         'logrotate'
-        'tmpfiles.d')
-md5sums=('61b51a04619aeafd965892a53f86d192'
+        'tmpfiles.d'
+        'rarCVE.patch')
+md5sums=('453a389e0147b5df8fae5601b390d7db'
          '75584367b1fb2a335061afef95c07ba4'
          'ea0beeef854b4a3cf6b25dc49b228f56'
          '5c646ed6f7100c5223dab648c57d802a'
          '9ea7c696979f3977120791bdb355acf9'
          '8386e24561c5ce4cb87fa1d9f3b1cd87'
-         '89ed33d37ca79d45b8c02418df2486e6')
+         '89ed33d37ca79d45b8c02418df2486e6'
+         'e497f962919d04f2569e07211dd5d683')
 
 build() {
 	cd ${pkgname}-${pkgver}
+	# CVE-2012-6706 https://bugzilla.suse.com/show_bug.cgi?id=1045490
+	#patch -p1 -i ${srcdir}/rarCVE.patch
 	
 	./configure --prefix=/usr \
 	       --sysconfdir=/etc/clamav \
 	       --with-dbdir=/var/lib/clamav \
-	       --disable-clamav
+	       --disable-clamav \
+	       --disable-zlib-vcheck \
+	       --disable-llvm
 	make
 }
 

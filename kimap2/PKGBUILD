@@ -1,0 +1,47 @@
+
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
+pkgname=kimap2
+pkgver=0.3.0
+_commit=21ba1d2fa1f8b094e484e6c2d21b4347c44e9bda
+pkgrel=1
+pkgdesc="Job-based API for interacting with IMAP servers, 2 version"
+arch=('x86_64')
+url='https://github.com/KDE/kimap2'
+license=('LGPL')
+depends=('kcoreaddons' 'kcodecs' 'kmime')
+makedepends=('extra-cmake-modules')
+#source=($_mirror/${pkgname}-${_kdever}.tar.xz)
+#md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
+source=("https://download.kde.org/unstable/kimap2/${pkgver}/src/${pkgname}-${pkgver}.tar.xz"
+#source=("https://github.com/KDE/kimap2/archive/${_commit}.zip"
+        'update.patch')
+sha256sums=('f35b27772036168de9cd18326aa84f0881ed5694fdfa2fe15b8e51bd2b916f2b'
+            '6b56bc72a03b8543e30aa0962731ecbcea57fcbd174b7a507017dc5e139211d1')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+
+  #patch -p1 -i ${srcdir}/update.patch
+}
+
+build() {
+  mkdir -p build
+  
+  cd build 
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_QMLDIR=/usr/lib/qt5/qml \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
+    -DBUILD_TESTING=OFF 
+  make 
+}
+
+package() {
+  cd build
+  
+  make DESTDIR=${pkgdir} install
+}

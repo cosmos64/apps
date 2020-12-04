@@ -4,20 +4,19 @@ source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=kactivities
 pkgver=${_kf5ver}
-pkgrel=1
+pkgrel=2
 pkgdesc="Core components for the KDE's Activities"
 arch=('x86_64')
 url='https://github.com/KDE/kactivities'
 license=('LGPL')
-depends=('qt5-declarative' 'boost-libs' 'kdbusaddons' 'kio' 'kwindowsystem' 'kservice' 'kdeclarative'
-         'kcmutils')
+depends=('qt5-declarative' 'boost-libs' 'kconfig' 'kcoreaddons' 'kwindowsystem')
 makedepends=('extra-cmake-modules' 'boost')
 options=('debug')
-source=("http://download.kde.org/stable/frameworks/5.25/${pkgname}-${pkgver}.tar.xz")
+source=("https://download.kde.org/stable/frameworks/5.72/${pkgname}-${pkgver}.tar.xz")
 md5sums=(`grep ${pkgname}-$_kf5ver.tar.xz ../kf5.md5 | cut -d" " -f1`)
 
 prepare() {
-  cd ${srcdir}/${pkgname}-${pkgver}
+  cd ${pkgname}-${pkgver}
   
   #patch -p1 -i ${srcdir}/plugin_dir.diff
 }
@@ -29,10 +28,10 @@ build() {
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_INSTALL_DIR=lib \
-    -DQML_INSTALL_DIR=/usr/lib/qt5/qml \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_QMLDIR=/usr/lib/qt5/qml \
     -DECM_MKSPECS_INSTALL_DIR=/usr/lib/qt5/mkspecs/modules \
-    -DQT_PLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_QTPLUGINDIR=/usr/lib/qt5/plugins \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
     -DBUILD_TESTING=OFF 
   make
@@ -40,7 +39,6 @@ build() {
 
 package() {
   cd build
-  make DESTDIR="${pkgdir}" install
-  # temp workaround until translations location is clarified, now files are also in plasma-desktop & kactivitymanagerd
-  #rm -r ${pkgdir}/usr/share/locale
+  
+  make DESTDIR=${pkgdir} install
 }

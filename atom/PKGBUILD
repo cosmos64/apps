@@ -1,39 +1,33 @@
 
 pkgname=atom
-pkgver=1.11.2
+pkgver=1.53.0
 pkgrel=1
 pkgdesc="Hackable text editor from the 21st Century"
 arch=('x86_64')
 url="https://github.com/atom/atom"
 license=('MIT')
-depends=('alsa-lib' 'gconf' 'gtk2' 'libgnome-keyring' 'libnotify' 'libxtst' 'nodejs'
-         'nss' 'python2')
-makedepends=('git')
+depends=('alsa-lib' 'gtk3' 'libnotify' 'libxtst' 'nss' 'libxkbfile')
+optdepends=('kde-gtk-config: gtk integration settings for Plasma')
 conflicts=('atom-editor')
 replaces=('atom-editor')
-source=("https://github.com/atom/atom/archive/v${pkgver}.tar.gz")
-md5sums=('c94d983357a6c4f19ad17f60663f43da')
-
-build() {
-  cd ${pkgname}-${pkgver}
-  sed -i "s|('/usr', 'local')|('${pkgdir}/usr')|" script/lib/install-application.js
-
-  script/build --compress-artifacts
-}
+source=("https://github.com/atom/atom/releases/download/v${pkgver}/atom-amd64.tar.gz"
+        'atom.desktop')
+md5sums=('5018b3cca1dcffee7af1e973273189da'
+         '64c714a8832e5be9e43e532f37ea30ce')
 
 package() {
-  cd ${pkgname}-${pkgver}
-
-  script/build --install 
+  cd ${pkgname}-${pkgver}-amd64
   
-  sed -e "s|<%= appName %>|Atom|" \
-    -e "s|<%= description %>|$pkgdesc|" \
-    -e "s|<%= installDir %>/share/<%= appFileName %>|/usr/bin|"\
-    -e "s|<%= iconPath %>|atom|"\
-    -e "s|GNOME;GTK;Utility;TextEditor;Development;|Utility;TextEditor;Development;|"\
-    resources/linux/atom.desktop.in > resources/linux/Atom.desktop
+  install -dm755 ${pkgdir}/usr/bin
+  install -dm755 ${pkgdir}/usr/share/atom
+  
+  mv resources/app/atom.sh ${pkgdir}/usr/bin/atom
+  cp -r * ${pkgdir}/usr/share/atom/
 
-  install -Dm644 resources/linux/Atom.desktop ${pkgdir}/usr/share/applications/atom.desktop
-  install -Dm644 resources/app-icons/stable/png/128.png ${pkgdir}/usr/share/pixmaps/atom.png
-  install -Dm644 LICENSE.md ${pkgdir}/usr/share/licenses/$pkgname/LICENSE.md
+  install -Dm644 ${srcdir}/atom.desktop ${pkgdir}/usr/share/applications/atom.desktop
+  install -Dm644 atom.png ${pkgdir}/usr/share/pixmaps/atom.png
+  install -Dm644 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+  # fix sandboxing issue, introduced with 1.47.0
+  # https://github.com/atom/atom/issues/20756
+  chmod 4755 ${pkgdir}/usr/share/atom/chrome-sandbox
 }

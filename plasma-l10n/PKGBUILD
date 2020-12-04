@@ -1,6 +1,6 @@
 
 pkgname=plasma-l10n
-pkgver=5.8.3
+pkgver=5.12.90
 pkgrel=1
 pkgdesc="Language packs for Plasma 5"
 arch=('x86_64')
@@ -8,12 +8,13 @@ url="https://websvn.kde.org/trunk/l10n-kf5/"
 license=('GPL')
 depends=('ki18n')
 makedepends=('extra-cmake-modules' 'kdoctools' 'gettext' 'subversion' 'imake')
-groups=('localization' 'plasma5')
+groups=('localization' 'kdeplasma5')
 source=("svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/ar"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/ast"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/bg"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/ca"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/cs"
+        "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/el"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/es"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/et"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/de"
@@ -23,6 +24,7 @@ source=("svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/ar"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/hu"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/id"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/it"
+        "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/ja"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/nl"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/pl"
         "svn://anonsvn.kde.org/home/kde/trunk/l10n-kf5/pt"
@@ -60,9 +62,11 @@ md5sums=('SKIP'
          'SKIP'
          'SKIP'
          'SKIP'
+         'SKIP'
+         'SKIP'
          '2c79e790e4ce39f654ddf9755975925f')
 
-_locales=(ar ast bg ca cs es et de fr gl hr hu id it nl pl pt pt_BR ro ru sr sv tr zh_CN zh_TW)
+_locales=(ar ast bg ca cs el es et de fr gl hr hu id it ja nl pl pt pt_BR ro ru sr sv tr zh_CN zh_TW)
  
 build() {
   for l in ${_locales[@]}; do

@@ -10,8 +10,8 @@ pkgdesc='Extra Dolphin plugins'
 url='https://projects.kde.org/projects/kde/kdesdk/dolphin-plugins'
 arch=('x86_64')
 license=('GPL' 'LGPL' 'FDL')
-groups=('kde' 'kdesdk' 'kde-uninstall' 'programming')
-depends=('kxmlgui' 'ki18n' 'kio' 'kdelibs4support' 'ktexteditor' 'kwidgetsaddons' 'dolphin')
+groups=('kde' 'kde-sdk' 'kde-uninstall' 'programming')
+depends=('kxmlgui' 'ki18n' 'kio' 'ktexteditor' 'kwidgetsaddons' 'dolphin')
 makedepends=('extra-cmake-modules' 'kdoctools' 'git')
 optdepends=('git: git support'
             #'mercurial: hg support'
@@ -30,10 +30,10 @@ build() {
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DSYSCONF_INSTALL_DIR=/etc \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-    -DLIB_INSTALL_DIR=lib
+    -DKDE_INSTALL_LIBDIR=lib
   make
 }
 

@@ -1,0 +1,35 @@
+
+pkgname=kuserfeedback
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Framework for collecting user feedback for applications via telemetry and surveys"
+arch=('x86_64')
+url="https://github.com/KDE/kuserfeedback"
+license=('MIT')
+depends=('qt5-declarative' 'qt5-svg') # 'php' optional, check what needs with plasma 5.15
+makedepends=('extra-cmake-modules' 'qt5-tools' 'clang')
+source=("https://download.kde.org/stable/kuserfeedback/${pkgname}-${pkgver}.tar.xz")
+sha256sums=('5a2f53ebb4b99a280757ca32bd9b686a7764a726e7e4d8bafee33acbb44b9db7')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  sed -i -e 's|QMLLINT_EXECUTABLE qmllint|QMLLINT_EXECUTABLE qmllint-qt5|' cmake/FindQmlLint.cmake
+}
+
+build() {
+  mkdir -p build
+  cd build
+  
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DBUILD_TESTING=OFF
+  make
+}
+
+package() {
+  cd build
+  
+  make DESTDIR=${pkgdir} install
+}

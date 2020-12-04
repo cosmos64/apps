@@ -1,25 +1,26 @@
 
 pkgname=postgis
-pkgver=2.3.0
+pkgver=3.0.3
+_pkgver=3.0.3
 pkgrel=1
 pkgdesc="Adds support for geographic objects to PostgreSQL"
 arch=('x86_64')
-url="http://postgis.refractions.net/"
+url="https://postgis.net/"
 license=('GPL')
 depends=('postgresql' 'proj' 'geos' 'gdal' 'json-c')
 options=('!libtool' '!makeflags')
-source=("http://download.osgeo.org/postgis/source/${pkgname}-${pkgver}.tar.gz")
-md5sums=('71f434fb3b2b4b2af9970834df593087')
+source=("https://download.osgeo.org/postgis/source/${pkgname}-${_pkgver}.tar.gz")
+md5sums=('9d3469838e546b57104804938c6c6256')
 
 build() {
-   cd ${pkgname}-${pkgver}
+   cd ${pkgname}-${_pkgver}
    
    ./configure --prefix=/usr --with-gdalconfig=/usr/bin/gdal-config
    make
 }
 
 package() {
-    cd ${pkgname}-${pkgver}
+    cd ${pkgname}-${_pkgver}
 	
     make DESTDIR=${pkgdir} install
 }

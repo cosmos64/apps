@@ -2,31 +2,31 @@
 # build twice, when building on the server, j8 fails to honor without wx first time
 
 pkgname=grass
-pkgver=7.0.5
-pkgrel=1
+pkgver=7.8.4
+pkgrel=2
 pkgdesc='Geographic Information System (GIS) used for geospatial data management and analysis, image processing, graphics/maps production, spatial modeling, and visualization.'
 arch=('x86_64')
-url='http://grass.itc.it/index.php'
+url='https://grass.osgeo.org/'
 license=('GPL')
-depends=('gdal' 'tk' 'sqlite3' 'python2' 'mesa' 'proj' 'libjpeg-turbo' 'libpng' 'libtiff'
-         'cfitsio' 'fftw' 'libxmu' 'postgresql' 'xorg-server' 'glu' 'tcl' 'zlib' 'cairo' 'geos')
+depends=('gdal' 'tk' 'sqlite3' 'python3-numpy' 'python3-pillow' 'mesa' 'proj' 'libjpeg-turbo' 'libpng' 'libtiff'
+         'cfitsio' 'fftw' 'libxmu' 'postgresql' 'xorg-server' 'glu' 'tcl' 'zlib' 'cairo' 'geos' 'zstd')
 makedepends=('mariadb' 'freetype2' 'r')
 optdepends=('fftw: required for i.fft and i.ifft modules'
             'postgresql: PostgreSQL database interface'
             'r: R language interface'
             'lapack: required for GMATH library')
 options=('!libtool' '!makeflags')
-groups=('graphics')
-source=("http://grass.osgeo.org/grass70/source/${pkgname}-${pkgver}.tar.gz"
+groups=('gis')
+source=("https://grass.osgeo.org/grass78/source/${pkgname}-${pkgver}.tar.gz"
         "${pkgname}.sh"
         "${pkgname}.conf")
-md5sums=('55d781e3ea99d1d8b3225dd4adcb3b16'
+md5sums=('2c90a74ebabb1d4410f70a9c551f53b7'
          '23da2e9399b3c5504851dec37821abe1'
          '6103480c2a1adc19a50b9e925e5e6d4c')
 
 build() {
   cd ${pkgname}-${pkgver}
-  sed -i '/^\s*INSTDIR/ s/".*"//' configure
+  #sed -i '/^\s*INSTDIR/ s/".*"//' configure
   export CFLAGS="$CPPFLAGS $CFLAGS"
   export CXXFLAGS="$CPPFLAGS $CXXFLAGS"
   unset CPPFLAGS
@@ -57,6 +57,7 @@ build() {
     --with-fftw-libs=/usr/lib \
     --with-freetype \
     --with-freetype-includes=/usr/include/freetype2 \
+    --with-zstd \
     --without-glw \
     --without-wxwidgets \
     --without-htmldocs

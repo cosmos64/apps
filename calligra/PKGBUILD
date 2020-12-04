@@ -1,64 +1,83 @@
 
-pkgname=calligra
-pkgver=2.9.124
-_commit=d6cbb49eabf5e1ffed04e70f2f4404f30538dc60
-pkgrel=1
+pkgbase=calligra
+pkgname=('calligra' 'calligra-l10n')
+pkgver=3.2.1
+_commit=886e80baee69aed3a5f21ad517e73e46656ed1ca
+pkgrel=7
 arch=('x86_64')
 pkgdesc="Suite is a collection of office applications linked together by a common base."
-url='http://www.calligra-suite.org'
+url='https://www.calligra-suite.org'
 license=('FDL1.2' 'GPL2' 'LGPL')
-depends=('karchive' 'kcodecs' 'kconfig' 'kcoreaddons' 'kdbusaddons' 'kguiaddons' 'ki18n' 'kitemviews' 'kwidgetsaddons'
+makedepends=('karchive' 'kcodecs' 'kconfig' 'kcoreaddons' 'kdbusaddons' 'kguiaddons' 'ki18n' 'kitemviews' 'kwidgetsaddons'
          'threadweaver' 'kcompletion' 'kiconthemes' 'kparts' 'kxmlgui' 'kross' 'kconfigwidgets' 'ktexteditor' 
-         'kdelibs4support' 'kio'
-         'eigen3' 'freetds' 'xbase' 'libpqxx' 'libvisio' 'libgsf' 'libwpd' 'libwpg' 'libwps' 'pstoedit' 'gsl' 
-         'lcms2' 'libmariadbclient' 'libodfgen' 'poppler-qt5' 'libspnav' 'fftw' 'hicolor-icon-theme' 
-         'sqlite3' 'libkdcraw' 'exiv2' 'qca-qt5' 'qt5-declarative' 'marble' 'kactivities' 'kdiagram' 'kdeclarative' 'kcalcore'
-         'kcontacts' 'akonadi-contacts' 'knotifyconfig' 'knotifications' 'okular' 'openexr' 'vc' 'kreport' 'qt5-webkit')
-makedepends=('extra-cmake-modules' 'kdoctools' 'git' 'boost' 'docbook-xsl' 'postgresql') # 'clang' vc fails clang
-optdepends=('postgresql: PostgreSQL database driver')
-#source=("http://mirrors.mit.edu/kde/stable/${pkgbase}-${pkgver}/${pkgbase}-${pkgver}.tar.xz")
-source=("https://github.com/KDE/calligra/archive/${_commit}.zip"
-        'libwps-0.4.patch'
-        'warnings.diff')
-md5sums=('39ac686a3e3ab458f7e2a33e9d295cf7'
-         '2529367ef6a10582436003aceb7dc3e8'
-         '124aa66f055f957d2d618f7a18f35d43')
+         'kdelibs4support' 'kio' 'knotifyconfig' 'knotifications' 'ktextwidgets'
+         'eigen3' 'freetds' 'libvisio' 'libgsf' 'libwpd' 'libwpg' 'libwps' 'pstoedit' 'gsl' 
+         'lcms2' 'libodfgen' 'poppler' 'libspnav' 'fftw' 'hicolor-icon-theme' 
+         'sqlite3' 'libkdcraw' 'qca-qt5' 'qt5-declarative' 'marble' 'kactivities' 'kdiagram' 'kdeclarative' 'kcalcore'
+         'kcontacts' 'akonadi-contacts' 'kholidays' 'okular' 'openexr' 'vc' 'kreport'
+         'extra-cmake-modules' 'kdoctools' 'boost' 'docbook-xsl') # 'clang' vc fails clang
+source=("https://download.kde.org/stable/${pkgbase}/${pkgver}/${pkgbase}-${pkgver}.tar.xz"
+#source=("https://github.com/KDE/calligra/archive/${_commit}.zip"
+        'poppler0.82.diff'
+        'poppler0.83.diff'
+        "https://github.com/KDE/calligra/commit/ee83e0f2c251072e47a2799619cdc79efe67e651.diff")
+#source=("https://share.kde.org/index.php/s/yanrJWiQFB3rrvc/download?path=%2F&files=${pkgbase}-${pkgver}.tar.xz")
+sha256sums=('b1f8a6eb8208543a2f908caa83d089075fcd1e530d00e19f5362b2f9cc371147'
+            '8f95ec7c6ab71b10b91061c10ba8f118d6462b06d6e64ee9f5f5b74a7d9fc16a'
+            '32639a9bde97620773c4010df7928d65a07885f2d68738de0bb8405d99a629f9'
+            'bda03e5349b791e07093edefbfbfcefc02df6b6e773b43e219ce8e5842192947')
 
 prepare() {
-  cd ${pkgname}-${_commit}
-  #patch -p1 -i $srcdir/warnings.diff
-  #patch -p1 -i $srcdir/libwps-0.4.patch
-  #sed -i 's|(std::isfinite(maxSnapDistance)|(isfinite(maxSnapDistance)|' libs/flake/KoSnapStrategy.cpp
-  sed -i 's|Okular5 1.0.0 QUIET|Okular5 0.99.60 QUIET|' CMakeLists.txt
+  cd ${pkgbase}-${pkgver}
+  #patch -p1 -i ${srcdir}/poppler0.82.diff
+  #patch -p1 -i ${srcdir}/poppler0.83.diff
+  #patch -p1 -i ${srcdir}/ee83e0f2c251072e47a2799619cdc79efe67e651.diff
+  #sed -i 's|KPropertyWidgets 3.0.0 EXACT QUIET|KPropertyWidgets 3.0 QUIET|' CMakeLists.txt
 }
 
 build() {
-  mkdir build
+  mkdir -p build
   cd build
   
   #export CC=/usr/bin/clang
   #export CXX=/usr/bin/clang++
   
-  cmake ../${pkgname}-${_commit} \
+  cmake ../${pkgbase}-${pkgver} \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_INSTALL_LIBDIR=lib \
     -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-    -DPRODUCTSET=DESKTOP \
     -DBUILD_TESTING=FALSE \
-    -DPACKAGERS_BUILD=true
+    -DPACKAGERS_BUILD=true \
+    -DBUILD_UNMAINTAINED=TRUE
   make
 }
 
-package() {
+package_calligra() {
+  pkgdesc="Suite is a collection of office applications linked together by a common base."
+  depends=('karchive' 'kcodecs' 'kconfig' 'kcoreaddons' 'kdbusaddons' 'kguiaddons' 'ki18n' 'kitemviews' 'kwidgetsaddons'
+         'threadweaver' 'kcompletion' 'kiconthemes' 'kparts' 'kxmlgui' 'kross' 'kconfigwidgets' 'ktexteditor' 
+         'kdelibs4support' 'kio' 'knotifyconfig' 'knotifications' 'ktextwidgets'
+         'eigen3' 'freetds' 'libvisio' 'libgsf' 'libwpd' 'libwpg' 'libwps' 'pstoedit' 'gsl' 
+         'lcms2' 'libodfgen' 'poppler' 'libspnav' 'fftw' 'hicolor-icon-theme' 
+         'sqlite3' 'libkdcraw' 'exiv2' 'qca-qt5' 'qt5-declarative' 'marble' 'kactivities' 'kdiagram' 'kdeclarative' 'kcalcore'
+         'kcontacts' 'akonadi-contacts' 'kholidays' 'okular' 'openexr' 'vc' 'kreport' 'qt5-webkit')
+         
   cd build
   
   make DESTDIR=${pkgdir} install
   
-  # fix some bugs in .desktop files
-  #sed -i 's|X-DBUS-StartupType=multi|#X-DBUS-StartupType=multi|' ${pkgdir}/usr/share/applications/org.kde.braindump.desktop
-  rm ${pkgdir}/usr/share/applications/calligra_filter_odt2docx.desktop
-  
+  #rm ${pkgdir}/usr/share/applications/calligra_filter_odt2docx.desktop
+  #use in calligra-l10n
+  mv ${pkgdir}/usr/share/locale ${srcdir}/
 }
 
+package_calligra-l10n() {
+  pkgdesc="Localization for Calligra"
+  depends=('ki18n')
+  groups=('localization')
+  
+  install -d -m755 ${pkgdir}/usr/share/locale
+  mv ${srcdir}/locale ${pkgdir}/usr/share
+}

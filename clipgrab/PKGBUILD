@@ -1,31 +1,35 @@
 
 pkgname=clipgrab
-pkgver=3.5.6
+pkgver=3.9.5
+_commit=c7507264e4b4dd835d41b6a493de4ae42d90856e
 pkgrel=1
 pkgdesc='A friendly downloader for YouTube and other sites'
 arch=('x86_64')
-url='http://clipgrab.org/'
+url='https://clipgrab.org/'
 license=('GPL3')
-depends=('qtwebkit' 'ffmpeg')
+depends=('qtwebengine' 'ffmpeg')
 groups=('multimedia')
-source=("http://download.clipgrab.de/$pkgname-$pkgver.tar.gz"
+source=("https://download.clipgrab.org/${pkgname}-${pkgver}.tar.gz"
         'clipgrab.desktop'
-        'clipgrab.png')
-md5sums=('9e524fbae65fbfe31920884ab9912632'
+        'clipgrab.png'
+        "https://gitlab.com/kikadf/clipgrab-qt5/raw/master/clipgrab-3.8.7-kde.patch")
+md5sums=('1ea7ea225f6f50f8cc1fe8d062635606'
          '9dd39ffcccb179d76ac84503bf3ffc11'
-         'e427c3a49fe3f7a86abeaa443fcdbec3')
+         'e427c3a49fe3f7a86abeaa443fcdbec3'
+         'ea6a25c843a74a69be17d564e79a3557')
 
 build() {
-  cd "$srcdir/$pkgname-$pkgver"
+  cd ${pkgname}-${pkgver}
+  #patch -p1 -i ${srcdir}/clipgrab-3.8.7-kde.patch
 
-  qmake clipgrab.pro
+  /usr/lib/qt5/bin/qmake clipgrab.pro
   make
 }
 
 package() {
-  cd "$srcdir/$pkgname-$pkgver"
+  cd ${pkgname}-${pkgver}
   
-  install -Dm755 "$pkgname" "$pkgdir/usr/bin/$pkgname"
-  install -Dm644 "$srcdir/$pkgname.png" "$pkgdir/usr/share/pixmaps/$pkgname.png"
-  install -Dm644 "$srcdir/$pkgname.desktop" "$pkgdir/usr/share/applications/$pkgname.desktop"
+  install -Dm755 ${pkgname} ${pkgdir}/usr/bin/${pkgname}
+  install -Dm644 ../${pkgname}.png ${pkgdir}/usr/share/pixmaps/${pkgname}.png
+  install -Dm644 ../${pkgname}.desktop ${pkgdir}/usr/share/applications/${pkgname}.desktop
 }

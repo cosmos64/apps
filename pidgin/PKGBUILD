@@ -1,21 +1,22 @@
 
 # perl issue on server, build locally only
 pkgname=pidgin
-pkgver=2.11.0
-pkgrel=1
+pkgver=2.14.1
+pkgrel=2
 pkgdesc="Multi-protocol instant messaging client"
 arch=('x86_64')
-url="http://pidgin.im/"
+url="https://pidgin.im/"
 license=('GPL')
-depends=("libpurple=$pkgver" 'startup-notification' 'gtk2' 'libxss' 'hicolor-icon-theme'
-         'libsm' 'libidn' 'avahi' 'networkmanager' 'gst-plugins-good' 'farstream')
-makedepends=('nss' 'libsasl' 'python2' 'tk' 'ca-certificates' 'intltool' )
+depends=("libpurple=${pkgver}" 'startup-notification' 'gtk2' 'libxss' 'hicolor-icon-theme'
+         'libsm' 'libidn' 'avahi' 'gst-plugins-good' 'farstream')
+makedepends=('nss' 'libsasl' 'python3' 'tk' 'ca-certificates' 'intltool' )
+optdepends=('kde-gtk-config: gtk integration settings for Plasma')
 options=('!libtool')
-source=("http://downloads.sourceforge.net/pidgin/${pkgname}-${pkgver}.tar.bz2")
-md5sums=('7b167474db669aab2f71fa46835fb83f')
+source=("https://downloads.sourceforge.net/pidgin/${pkgname}-${pkgver}.tar.bz2")
+sha256sums=('f132e18d551117d9e46acce29ba4f40892a86746c366999166a3862b51060780')
 
 build() {
-  cd ${pkgname}-$pkgver
+  cd ${pkgname}-${pkgver}
 
     ./configure --prefix=/usr \
                 --sysconfdir=/etc \
@@ -23,8 +24,8 @@ build() {
                 --disable-meanwhile \
                 --disable-gnutls \
                 --enable-cyrus-sasl \
-                --enable-nm \
-                --with-python=/usr/bin/python2 \
+                --disable-nm \
+                --with-python=/usr/bin/python3 \
                 --with-system-ssl-certs=/etc/ssl/certs \
                 --disable-gtkspell
     make
@@ -33,17 +34,17 @@ build() {
 package(){
     cd ${pkgbase}-${pkgver}
     #for linking
-    make -C libpurple DESTDIR="${pkgdir}" install-libLTLIBRARIES
+    make -C libpurple DESTDIR=${pkgdir} install-libLTLIBRARIES
 
-    make -C pidgin DESTDIR="${pkgdir}" install
-    make -C doc DESTDIR="${pkgdir}" install
+    make -C pidgin DESTDIR=${pkgdir} install
+    make -C doc DESTDIR=${pkgdir} install
 
     #clean up libpurple
-    make -C libpurple DESTDIR="${pkgdir}" uninstall-libLTLIBRARIES
+    make -C libpurple DESTDIR=${pkgdir} uninstall-libLTLIBRARIES
 
-    install -D -m 0644 pidgin/data/pidgin.desktop "${pkgdir}"/usr/share/applications/pidgin.desktop
+    install -D -m 0644 pidgin/data/pidgin.desktop ${pkgdir}/usr/share/applications/pidgin.desktop
 
-    rm -f "${pkgdir}"/usr/share/man/man1/finch.1
+    rm -f ${pkgdir}/usr/share/man/man1/finch.1
 }
 
 

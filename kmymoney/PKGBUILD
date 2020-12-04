@@ -1,32 +1,33 @@
 
 pkgname=kmymoney
-pkgver=4.100.7
-_commit=4604c7eca3bc50902a60fdbfe95ee47482f487c8
-pkgrel=12
+pkgver=5.1.0
+pkgrel=2
 pkgdesc="An finance manager for KDE with HBCI support"
 arch=('x86_64')
 url="http://www.kmymoney.org/"
 license=('GPL')
-depends=('kcoreaddons' 'kconfig' 'ki18n' 'khtml' 'kdelibs4support' 'kcompletion' 'kcmutils' 'kitemviews' 'kservice' 'kwallet' 
-         'kholidays' 'gpgmepp' 'kcontacts' 'akonadi-contacts' 'akonadi' 'kidentitymanagement' 'kross'
+depends=('karchive' 'kcoreaddons' 'kconfig' 'kconfigwidgets' 'ki18n' 'kcompletion' 'kcmutils' 'kitemmodels' 'kitemviews'
+         'kservice' 'kwallet' 'kiconthemes' 'kxmlgui' 'ktextwidgets' 'knotifications' 'kio' 'kholidays' 
+         'gpgme' 'kcontacts' 'akonadi-contacts' 'akonadi' 'kidentitymanagement'
          'shared-mime-info' 'boost-libs' 'pulseaudio' 'libofx' 'libical' 'alkimia' 'kdiagram'
-         'kactivities' 'aqbanking') # 'sqlcipher')
+         'kactivities' 'aqbanking' 'qtwebengine' 'sqlcipher')
 makedepends=('extra-cmake-modules' 'kdoctools' 'docbook-xsl' 'boost')  
-conflicts=('kf5-kmymoney')
-replaces=('kf5-kmymoney')
 groups=('office')
-source=("https://github.com/KDE/kmymoney/archive/${_commit}.zip")
-md5sums=('97de640e5b7db2f1d8fe73cb6057a413')
+source=("https://download.kde.org/stable/kmymoney/${pkgver}/src/${pkgname}-${pkgver}.tar.xz")
+sha256sums=('2db968f1d112b913fde3e0e5160215ca689ea2ca5ce3f6f00a4ef97330f71351')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+
+  # lower aqbanking requirement until there actually is a 5.8.0 release
+  #sed -i -e 's|find_package(AQBANKING 5.8.0)|find_package(AQBANKING 5.7.8)|' CMakeLists.txt
+}
 
 build() {
-  cd ${srcdir}
-  #sed -e "s/#include <kstdguiitem.h>/#include <kstandardguiitem.h>/" -i ${srcdir}/$_pkgname/kmymoney/dialogs/*.cpp
-  #sed -e "s|find_package(KActivities)|find_package(KF5Activities)|" -i ${srcdir}/$pkgname/CMakeLists.txt
-  
   mkdir -p build
   cd build
 
-  cmake ../${pkgname}-${_commit} \
+  cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DKDE_INSTALL_LIBDIR=lib \
@@ -35,7 +36,8 @@ build() {
     -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
     -DBUILD_TESTING=OFF \
-    -DENABLE_SQLCIPHER=OFF
+    -DENABLE_SQLCIPHER=ON \
+    -DENABLE_WEBENGINE=ON 
   make
 }
 

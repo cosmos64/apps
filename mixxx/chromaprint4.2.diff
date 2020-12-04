@@ -1,0 +1,62 @@
+diff --git a/src/musicbrainz/chromaprinter.cpp b/src/musicbrainz/chromaprinter.cpp
+index bc656e0..17bfb76 100644
+--- a/src/musicbrainz/chromaprinter.cpp
++++ b/src/musicbrainz/chromaprinter.cpp
+@@ -57,12 +57,12 @@ QString ChromaPrinter::calcFingerPrint(c
+     }
+     chromaprint_finish(ctx);
+ 
+-    void* fprint = NULL;
++    uint32_t* fprint = NULL;
+     int size = 0;
+     int ret = chromaprint_get_raw_fingerprint(ctx, &fprint, &size);
+     QByteArray fingerprint;
+     if (ret == 1) {
+-        void* encoded = NULL;
++        char* encoded = NULL;
+         int encoded_size = 0;
+         chromaprint_encode_fingerprint(fprint, size,
+                                        CHROMAPRINT_ALGORITHM_DEFAULT,
+--- ./src/util/math.h.orig	2016-07-14 04:13:22.861482580 +0100
++++ ./src/util/math.h	2016-07-14 04:15:36.966067224 +0100
+@@ -4,7 +4,13 @@
+ // Causes MSVC to define M_PI and friends.
+ // http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx
+ #define _USE_MATH_DEFINES
+-#include <cmath>
++#include <math.h>
++#include <cmath> 
++// Note: Because of our fpclassify hack, we actualy need to inlude both, 
++// the c and the c++ version of the math header.  
++// From GCC 6.1.1 math.h depends on cmath, which failes to compile if included 
++// after our fpclassify hack 
++
+ #include <algorithm>
+ 
+ #include "util/assert.h"
+--- a/src/library/trackcollection.cpp
++++ b/src/library/trackcollection.cpp
+@@ -2,10 +2,6 @@
+ #include <QtDebug>
+ 
+ #include "library/trackcollection.h"
+-
+-#ifdef __SQLITE3__
+-#include <sqlite3.h>
+-#endif
+ 
+ #include "library/librarytablemodel.h"
+ #include "library/schemamanager.h"
+
+--- a/src/library/trackcollection.h
++++ b/src/library/trackcollection.h
+@@ -34,8 +34,7 @@
+ #include "library/dao/libraryhashdao.h"
+ 
+ #ifdef __SQLITE3__
+-typedef struct sqlite3_context sqlite3_context;
+-typedef struct Mem sqlite3_value;
++#include <sqlite3.h>
+ #endif
+ 
+ class TrackInfoObject;

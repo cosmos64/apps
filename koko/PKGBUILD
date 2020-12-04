@@ -3,29 +3,27 @@
 source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=koko
-#pkgver=${_kdever}
 pkgver=0.1.0
-pkgrel=1
+_commit=c9244a6f43a865f34d8188a626b9a99d6a3266b1
+pkgrel=13
 pkgdesc="An Image Gallery application"
 arch=('x86_64')
 url='https://projects.kde.org/projects/playground/graphics/koko'
 license=('LGPL')
-depends=('baloo' 'plasma-framework' 'ki18n' 'kdeclarative' 'kconfig' 'kdbusaddons' 'exiv2')
-makedepends=('extra-cmake-modules' 'kdoctools' 'git')
-source=("git://anongit.kde.org/koko.git")
-md5sums=('SKIP')
+depends=('ki18n' 'kdeclarative' 'kconfig' 'kdbusaddons' 'kio' 'kguiaddons' 'kcoreaddons'
+         'knotifications' 'kirigami' 'exiv2' 'qt5-location')
+makedepends=('extra-cmake-modules' 'kdoctools')
+source=("https://github.com/KDE/koko/archive/${_commit}.zip")
+md5sums=('c8aace772f2ea382bc782b610591439f')
 
 build() {
   mkdir -p build
   cd build
   
-  cmake ../${pkgname} \
+  cmake ../${pkgname}-${_commit} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DSYSCONF_INSTALL_DIR=/etc \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
-    -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-    -DLIB_INSTALL_DIR=lib 
+    -DKDE_INSTALL_LIBDIR=lib 
   make
 }
 

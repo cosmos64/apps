@@ -1,26 +1,31 @@
 
 pkgname=qrencode
-pkgver=3.4.4
-pkgrel=2
+pkgver=4.1.1
+pkgrel=1
 pkgdesc="C library for encoding data in a QR Code symbol."
 arch=('x86_64')
-depends=('libpng')
-makedepends=('sdl')
-url="http://megaui.net/fukuchi/works/qrencode/index.en.html"
+url="https://fukuchi.org/works/qrencode/"
 license=('GPL')
+depends=('libpng' 'zlib')
+makedepends=('cmake')
 options=('!libtool')
-source=("http://megaui.net/fukuchi/works/qrencode/${pkgname}-${pkgver}.tar.bz2")
-md5sums=('62ba472bede0ad393cc63e0012b5f007')
+source=("https://fukuchi.org/works/qrencode/${pkgname}-${pkgver}.tar.bz2")
+sha512sums=('981b3242c213e1b40ac88711912dd8c27ea11f3437d1a04b6b226499a6e991a8f0b3b10f818bcc104812192a1dac4ce05f16ecd847a50cb03d4859b84bad89b8')
 
 build() {
-  cd "${srcdir}/$pkgname-$pkgver"
+  mkdir -p build
+  cd build
   
-  ./configure --prefix=/usr
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DBUILD_SHARED_LIBS=ON
   make
 }
 
 package() {
-  cd "${srcdir}/$pkgname-$pkgver"
+  cd build
 
-  make prefix="$pkgdir/usr" install
+  make DESTDIR=${pkgdir} install
 }

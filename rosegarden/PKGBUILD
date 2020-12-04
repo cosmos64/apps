@@ -1,11 +1,11 @@
 
 pkgname=rosegarden
-pkgver=16.06
-_pkgver=16.06
+pkgver=20.06
+_pkgver=20.06
 pkgrel=1
 pkgdesc="MIDI/audio sequencer and notation editor"
 arch=('x86_64')
-url="http://www.rosegardenmusic.com/"
+url="https://www.rosegardenmusic.com/"
 license=('GPL')
 depends=('liblrdf' 'dssi' 'fftw' 'perl' 'qt5-base' 'shared-mime-info' 'lilypond')
 makedepends=('cmake' 'qt5-tools')
@@ -14,18 +14,25 @@ optdepends=('cups: printing support'
             'flac'
             'wavpack')
 groups=('multimedia')
-source=("http://sourceforge.net/projects/rosegarden/files/${pkgname}/${_pkgver}/${pkgname}-${pkgver}.tar.bz2")
-md5sums=('a8679dcd852a78eee064d8a4a4f4a961')
+source=("https://sourceforge.net/projects/rosegarden/files/${pkgname}/${_pkgver}/${pkgname}-${pkgver}.tar.bz2"
+        'qt5.15.diff')
+md5sums=('16f0cbbb3104c9f58f644b18e4cbaf19'
+         '1568185878c8b25fbe88df3aa281e53a')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+
+  patch -p1 -i ${srcdir}/qt5.15.diff
+}
 
 build() {
   mkdir -p build
   cd build
   
-  cmake ../${pkgname}-${_pkgver} \
+  cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DCMAKE_INSTALL_LIBDIR=lib \
-    -DUSE_QT5=TRUE
+    -DCMAKE_INSTALL_LIBDIR=lib 
   make
 }
 

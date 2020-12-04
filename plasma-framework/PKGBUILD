@@ -4,25 +4,29 @@ source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=plasma-framework
 pkgver=${_kf5ver}
-pkgrel=1
+pkgrel=3
 pkgdesc='Plasma library and runtime components based upon KF5 and Qt5'
 arch=('x86_64')
 url='https://github.com/KDE/plasma-framework'
 license=('LGPL')
 depends=('kactivities' 'karchive' 'kconfig' 'kconfigwidgets' 'kcoreaddons' 'kdbusaddons' 'kdeclarative' 'kglobalaccel'
          'kguiaddons' 'ki18n' 'kiconthemes' 'kio' 'kservice' 'kwindowsystem' 'kxmlgui' 'knotifications' 'kpackage'
-         'qt5-quickcontrols')
+         'kwayland' 'qt5-quickcontrols' 'kirigami')
 makedepends=('extra-cmake-modules' 'kdoctools')
 groups=('kf5')
 options=('debug')
-source=("http://download.kde.org/stable/frameworks/5.19/${pkgname}-${pkgver}.tar.xz")
-md5sums=(`grep ${pkgname}-${_kf5ver}.tar.xz ../kf5.md5 | cut -d" " -f1`)
+source=("https://download.kde.org/stable/frameworks/5.70/${pkgname}-${pkgver}.tar.xz"
+        "https://github.com/KDE/plasma-framework/commit/ebae2d63033647950cf0f9d97410723a8c7db1f3.diff"
+        "${pkgname}-master.zip")
+md5sums=(`grep ${pkgname}-${_kf5ver}.tar.xz ../kf5.md5 | cut -d" " -f1`
+         '2c3be731aec7261770ce70919d30b3ea'
+         'aad3373258e5624d46a539660c4d8964')
 
 prepare() {
   cd ${pkgname}-${pkgver}
-  # revert commit, stops the option to drag widgets to the desktop/panel
-  #patch -p1 -i ${srcdir}/rb128640.patch
-  #patch -p1 -i ${srcdir}/rb128641.patch
+  # https://forum.kaosx.us/d/2322-plasma-shell-crashes-after-update
+  #cp -v ${srcdir}/plasma-framework-master/src/desktoptheme/breeze/dialogs/background.svgz src/desktoptheme/breeze/dialogs/background.svgz
+  #patch -p1 -i ${srcdir}/ebae2d63033647950cf0f9d97410723a8c7db1f3.diff
 }
 
 build() {

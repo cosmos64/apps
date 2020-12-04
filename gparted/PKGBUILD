@@ -1,27 +1,23 @@
 
 pkgname=gparted
-pkgver=0.27.0
+pkgver=1.1.0
 pkgrel=1
 pkgdesc="A Partition Magic clone, frontend to GNU Parted."
 arch=('x86_64')
-url="http://gparted.sourceforge.net"
+url="https://gparted.sourceforge.io/"
 license=('GPL')
-depends=('parted' 'gtkmm' 'hicolor-icon-theme')
-makedepends=('intltool' 'pkg-config' 'gnome-doc-utils')
-optdepends=('dosfstools: for FAT16 and FAT32 partitions'
-            'jfsutils: for jfs partitions'
-            'ntfs-3g: for ntfs partitions'
-            'reiserfsprogs: for reiser partitions'
-            'xfsprogs: for xfs partitions')
-source=("http://downloads.sourceforge.net/project/gparted/gparted/${pkgname}-${pkgver}/${pkgname}-${pkgver}.tar.gz"
+depends=('parted' 'gtkmm3' 'polkit' 'dosfstools' 'jfsutils' 'ntfs-3g' 'reiserfsprogs' 'xfsprogs')
+makedepends=('intltool' 'pkg-config' 'itstool')
+source=("https://downloads.sourceforge.net/project/gparted/gparted/${pkgname}-${pkgver}/${pkgname}-${pkgver}.tar.gz"
         'gparted.desktop')
-md5sums=('726f539f774b442670028af656f270bd'
-         '76b565bf67ffb527786070825f613aa7')
+sha1sums=('af44456f16bfc53f4f72ddc9b15e097bdfdaeab7'
+          '04e05c2c0bc62f31d5781333ba98aaf0d71c0dd8')
 
 build() {
   cd ${pkgname}-${pkgver}
 
-  ./configure --prefix=/usr
+  ./configure --prefix=/usr \
+    --disable-doc
   make
 }
 
@@ -29,6 +25,6 @@ package() {
   cd ${pkgname}-${pkgver}
   make DESTDIR=${pkgdir} install
   
-  rm ${pkgdir}/usr/share/applications/gparted.desktop
-  install -m 644 -p ${srcdir}/gparted.desktop ${pkgdir}/usr/share/applications/
+  #rm ${pkgdir}/usr/share/applications/gparted.desktop
+  #install -m 644 -p ${srcdir}/gparted.desktop ${pkgdir}/usr/share/applications/
 }

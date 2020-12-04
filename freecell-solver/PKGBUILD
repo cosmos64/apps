@@ -1,0 +1,31 @@
+
+pkgname=freecell-solver
+pkgver=5.0.0
+pkgrel=3
+arch=('x86_64')
+pkgdesc="C library for automatically solving Freecell and some other variants of card Solitaire."
+url="https://fc-solve.shlomifish.org/"
+license=('MIT' 'LGPL')
+depends=('gperf' 'hunspell')
+makedepends=('cmake' 'asciidoc' 'python3-setuptools' 'perl-path-tiny' 'perl-template-toolkit')
+source=("https://fc-solve.shlomifish.org/downloads/fc-solve/${pkgname}-${pkgver}.tar.xz")
+md5sums=('def258dd81ac99928fa9187ff16a6285')
+
+build() {  
+  mkdir -p build
+  cd build
+
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_STATIC_LIBRARY=OFF \
+    -DFCS_WITH_TEST_SUITE=OFF \
+    -DFCS_BUILD_DOCS=OFF
+  make
+}
+
+package() {
+  cd build
+
+  make DESTDIR=${pkgdir} install
+}

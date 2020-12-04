@@ -3,33 +3,33 @@
 source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=kdegraphics-mobipocket
-arch=('x86_64')
 pkgver=${_kdever}
 pkgrel=1
+arch=('x86_64')
 pkgdesc="Collection of plugins to handle mobipocket files"
-url="https://projects.kde.org/projects/kde/kdegraphics/kdegraphics-mobipocket"
+url="https://github.com/KDE/kdegraphics-mobipocket"
 license=('GPL' 'LGPL' 'FDL')
-depends=('kdelibs' 'strigi')
-makedepends=('automoc4')
-groups=('kde' 'kdegraphics' 'kde-uninstall')
+depends=('qt5-base' 'kio')
+makedepends=('extra-cmake-modules')
+groups=('kde-graphics')
 source=("$_mirror/${pkgname}-$_kdever.tar.xz")
 md5sums=(`grep ${pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
 
 build() {
+  mkdir -p build
+  cd build
 
-        msg "starting build ..."
-	cd ${srcdir}/${pkgname}-${pkgver}
-	
-	cmake . -DCMAKE_BUILD_TYPE=${_build_type} \
-		-DCMAKE_INSTALL_PREFIX=${_installprefix} \
-		-DCMAKE_SKIP_RPATH=ON \
-		-DCMAKE_{SHARED,MODULE,EXE}_LINKER_FLAGS='-Wl,--no-undefined -Wl,--as-needed'
-
-	make
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_USE_QT_SYS_PATHS=ON
+  make
 }
 
 package() {
-	cd ${srcdir}/${pkgname}-${pkgver}
-	
-	make DESTDIR=${pkgdir} install
+  cd build
+
+  make DESTDIR=${pkgdir} install
 }

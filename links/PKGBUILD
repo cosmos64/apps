@@ -1,28 +1,27 @@
 
 pkgname=links
-pkgver=2.13
+pkgver=2.21
 pkgrel=1
 pkgdesc="A text WWW browser, similar to Lynx"
 arch=('x86_64')
 url="http://links.twibright.com/"
 license=('GPL')
-depends=('bzip2' 'xz' 'zlib' 'openssl' 'gpm')
+depends=('bzip2' 'xz' 'zlib' 'openssl' 'gpm' 'libx11' 'libtiff' 'libpng')
 makedepends=('libtiff' 'libpng' 'libxt')
-optdepends=('libx11: for using xlinks'
-            'libtiff: for using xlinks'
-            'libpng: for using xlinks')
+groups=('network-web')
 source=("http://links.twibright.com/download/${pkgname}-${pkgver}.tar.bz2"
         'links.desktop')
-md5sums=('af418c83909ee73c09b95470bda6e377'
+md5sums=('b88a46733d6932442ed8a6b751aac6b4'
          '7c47b15aaef51f1de129ff3a2afb7eac')
 
 build() {
   cd ${pkgname}-${pkgver}
+  sed -i "/ac_cpp=/s/\$CPPFLAGS/\$CPPFLAGS -O2/" configure
   (cd intl; ./gen-intl; ./synclang)
   
   ./configure --prefix=/usr \
         --mandir=/usr/share/man \
-        --enable-javascript \
+        --disable-javascript \
         --enable-graphics \
         --with-x \
         --with-fb
@@ -31,7 +30,7 @@ build() {
 
   ./configure --prefix=/usr \
          --mandir=/usr/share/man \
-         --enable-javascript \
+         --disable-javascript \
          --disable-graphics \
          --without-x \
          --without-fb

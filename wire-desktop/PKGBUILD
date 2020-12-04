@@ -1,0 +1,37 @@
+
+pkgname=wire-desktop
+pkgver=3.21.2936
+pkgrel=1
+pkgdesc="Cross platform desktop app, wrapping the wire-webapp. Based on Electron"
+arch=('x86_64')
+url="https://wire.com/en/"
+license=('GPL3')
+depends=('alsa-lib' 'gtk3' 'libxtst' 'nss')
+makedepends=('nodejs' 'yarn')
+optdepends=('kde-gtk-config: gtk integration settings for Plasma')
+source=("https://github.com/wireapp/wire-desktop/archive/linux/${pkgver}.tar.gz"
+        'wire-desktop.desktop')
+md5sums=('1734927f78656ea60dae21e17174b7d9'
+         '32a998ab2d5cec93ab975e5aff4ad223')
+
+build() {
+  cd ${pkgname}-linux-${pkgver}
+  
+  yarn
+  #sed -i '/Promise.all/d' node_modules/@wireapp/build-tools/dist/cli/build-linux-cli.js
+  LINUX_TARGET=dir yarn build:linux
+}
+
+package() {
+  cd ${pkgname}-linux-${pkgver}
+  
+  install -d ${pkgdir}/usr/lib/${pkgname}
+  install -d ${pkgdir}/usr/bin
+  
+  cp -a wrap/dist/linux-unpacked/* ${pkgdir}/usr/lib/${pkgname}
+  ln -s /usr/lib/${pkgname}/${pkgname} ${pkgdir}/usr/bin/${pkgname}
+
+  install -Dm644 ../${pkgname}.desktop ${pkgdir}/usr/share/applications/${pkgname}.desktop
+  install -Dm644 resources/icons/256x256.png ${pkgdir}/usr/share/pixmaps/${pkgname}.png
+  install -Dm644 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+}

@@ -4,22 +4,24 @@ source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=ktexteditor
 pkgver=${_kf5ver}
-pkgrel=1
+pkgrel=2
 pkgdesc='KTextEditor provides a powerful text editor component that you can embed in your application'
 arch=('x86_64')
 url='https://github.com/KDE/ktexteditor'
 license=('LGPL')
-depends=('kparts')
+depends=('karchive' 'kconfig' 'kguiaddons' 'ki18n' 'kio' 'kparts' 'sonnet' 'kiconthemes'
+         'syntax-highlighting' 'editorconfig-core-c')
 makedepends=('extra-cmake-modules')
 groups=('kf5')
-source=("http://download.kde.org/stable/frameworks/5.12/${pkgname}-${pkgver}.tar.xz")
-md5sums=(`grep ${pkgname}-$_kf5ver.tar.xz ../kf5.md5 | cut -d" " -f1`)
+source=("http://download.kde.org/stable/frameworks/5.74/${pkgname}-${pkgver}.tar.xz"
+        "https://github.com/KDE/ktexteditor/commit/f6e72a23052339253daa79095391625cf01c96f1.diff")
+md5sums=(`grep ${pkgname}-$_kf5ver.tar.xz ../kf5.md5 | cut -d" " -f1`
+         'ca12b601c2de805cb408c8b9989c011f')
 
-prepare () {
+prepare() {
   cd ${pkgname}-${pkgver}
-  # syntax highlighting for PKGBUILD files
-  sed -i -e 's/.bash_login;.profile/.bash_login;.profile;PKGBUILD/' ${srcdir}/${pkgname}-${pkgver}/src/syntax/data/bash.xml
-  #patch -p1 -i ${srcdir}/clazy_fix.diff
+  # https://bugs.kde.org/show_bug.cgi?id=413474
+  #patch -p1 -i ${srcdir}/f6e72a23052339253daa79095391625cf01c96f1.diff
 }
 
 build() {
@@ -29,8 +31,8 @@ build() {
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_INSTALL_DIR=lib \
-    -DSYSCONF_INSTALL_DIR=/etc \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
     -DBUILD_TESTING=OFF
   make
@@ -39,5 +41,5 @@ build() {
 package() {
   cd build
 
-  make DESTDIR="${pkgdir}" install
+  make DESTDIR=${pkgdir} install
 }

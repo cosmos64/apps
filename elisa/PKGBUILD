@@ -1,0 +1,35 @@
+
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
+pkgname=elisa
+pkgver=${_kdever}
+pkgrel=1
+arch=('x86_64')
+pkgdesc="Music Player"
+url="https://community.kde.org/Elisa"
+license=('GPL')
+depends=('ki18n' 'kdeclarative' 'kcoreaddons' 'baloo' 'kfilemetadata' 'kxmlgui' 
+         'kconfig' 'kcmutils' 'qt5-quickcontrols' 'qt5-quickcontrols2' 
+         'qt5-websockets' 'kirigami') # 'kdsoap' 'upnp-qt')
+makedepends=('extra-cmake-modules' 'kdoctools')
+source=("$_mirror/${pkgname}-${_kdever}.tar.xz")
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
+
+build() {
+  mkdir -p build
+  cd build
+  
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DKDE_INSTALL_LIBDIR=lib
+    
+  make
+}
+
+package() {
+  cd build
+  
+  make DESTDIR=${pkgdir} install
+}

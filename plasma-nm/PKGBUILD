@@ -11,23 +11,23 @@ arch=('x86_64')
 url="https://github.com/KDE/plasma-nm"
 license=('GPL')
 depends=('modemmanager-qt' 'networkmanager-qt' 'ki18n' 'kwindowsystem' 'kservice' 'kcompletion' 'kwidgetsaddons'
-         'kio' 'kcoreaddons' 'kwallet' 'kitemviews' 'kxmlgui' 'kconfigwidgets' 'kiconthemes' 'solid'
-         'kdbusaddons' 'knotifications' 'kdeclarative' 'kinit' 'kdelibs4support' 'plasma-framework' 
+         'kio' 'kcoreaddons' 'kwallet' 'kitemviews' 'kxmlgui' 'kconfigwidgets' 'kiconthemes' 'solid' 'prison'
+         'kdbusaddons' 'knotifications' 'kdeclarative' 'kinit' 'plasma-framework' 
          'mobile-broadband-provider-info' 'openconnect' 'qca-qt5')
 makedepends=('extra-cmake-modules' 'kdoctools' 'qt5-tools')
-groups=('plasma5')
-conflicts=('kf5-plasma-nm')
-replaces=('kf5-plasma-nm')
-#source=("http://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz")
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz")
-md5sums=(`grep ${pkgname}-${_plasmaver}.tar.gz ../kf5.md5 | cut -d" " -f1`)
+groups=('kdeplasma5')
+source=("https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz")
+#source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz")
+md5sums=(`grep ${pkgname}-${_plasmaver}.tar.xz ../kf5.md5 | cut -d" " -f1`)
 
 build() {
-  cd ${pkgname}-${__pkgver}
+  cd ${pkgname}-${pkgver}
   #patch -p1 -i ${srcdir}/c5eb19bb44c8b10d848628557405b597b680bbe8.diff
-  mkdir build
+  sed -i 's|X-KDE-System-Settings-Parent-Category=network|X-KDE-System-Settings-Parent-Category=connectivity|' kcm/kcm_networkmanagement.desktop
   
+  mkdir -p build  
   cd build
+  
   cmake -DCMAKE_INSTALL_PREFIX=/usr \
         -DCMAKE_BUILD_TYPE=Release \
         -DKDE_INSTALL_LIBDIR=lib \
@@ -39,7 +39,7 @@ build() {
 }
 
 package() {
-  cd ${pkgname}-${__pkgver}/build
+  cd ${pkgname}-${pkgver}/build
   
   make DESTDIR=${pkgdir} install
 }

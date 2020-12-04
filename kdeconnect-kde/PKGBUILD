@@ -1,7 +1,9 @@
 
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
 pkgname=kdeconnect-kde
-pkgver=1.0.1
-_pkgver=1.0.1
+pkgver=${_kdever}
 pkgrel=1
 epoch=1
 pkgdesc='KDE Connect adds communication between KDE and your smartphone'
@@ -9,18 +11,19 @@ url='https://github.com/KDE/kdeconnect-kde'
 license=('GPL')
 arch=('x86_64')
 depends=('kcmutils' 'kconfigwidgets' 'kiconthemes' 'kdbusaddons' 'knotifications' 
-         'kio' 'ki18n' 'kdeclarative' 'kwayland' 'qca-qt5' 'libfakekey'
-         'qt5-quickcontrols' 'telepathy-qt5' 'kirigami')
+         'kio' 'ki18n' 'kdeclarative' 'kwayland' 'kpeoplevcard' 'qca-qt5' 'libfakekey'
+         'qt5-quickcontrols' 'kirigami' 'sshfs' 'pulseaudio-qt')
 makedepends=('extra-cmake-modules' 'kdoctools')
-conflicts=('kf5-kdeconnect-kde')
-replaces=('kf5-kdeconnect-kde')
-source=("http://download.kde.org/stable/kdeconnect/${_pkgver}/src/${pkgname}-${pkgver}.tar.xz")
-md5sums=('9f2af720aae76bb8a32f29c0fcee0ac7')
+source=("$_mirror/${pkgname}-${_kdever}.tar.xz"
+        'openssh8.2.patch')
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`
+         'ec00e96b184e6e0ab3641dab9dbac9e8')
 
 prepare() {
-  cd $pkgname-${pkgver}
+  cd ${pkgname}-${pkgver}
   #sed -i -e 's|import QtQuick.Layouts 1.2|import QtQuick.Layouts 1.1|' ${srcdir}/${pkgname}/app/qml/DeviceDelegate.qml
-  #sed -i -e 's|import QtQuick.Layouts 1.2|import QtQuick.Layouts 1.1|' ${srcdir}/${pkgname}/app/qml/mpris.qml
+  # file browsing crashes with openssh 8.2, fix from ArchLinux
+  patch -p1 -i ${srcdir}/openssh8.2.patch
 }
 
 build() {
@@ -31,12 +34,11 @@ build() {
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_SKIP_RPATH=ON \
-    -DKDE_INSTALL_LIBDIR=lib \
-    -DKDE_INSTALL_LIBEXECDIR=lib \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DCMAKE_INSTALL_LIBEXECDIR=lib \
     -DKDE_INSTALL_SYSCONFDIR=/etc \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-    -DBUILD_TESTING=OFF \
-    -DEXPERIMENTALAPP_ENABLED=ON
+    -DBUILD_TESTING=OFF 
   make 
 }
 

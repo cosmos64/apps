@@ -1,0 +1,49 @@
+
+pkgname=calligraplan
+pkgver=3.2.2
+pkgrel=1
+arch=('x86_64')
+pkgdesc="Project management application, intended for managing moderately large projects with multiple resources."
+url='https://www.calligra.org/plan/'
+license=('FDL1.2' 'GPL2' 'LGPL')
+depends=('kinit' 'karchive' 'kconfig' 'kconfigwidgets' 'kcoreaddons' 'kdbusaddons' 'kguiaddons' 
+         'ki18n' 'kiconthemes' 'kitemviews' 'kjobwidgets' 'kcmutils' 'kio' 'knotifications' 
+         'kparts' 'ktextwidgets' 'kwallet' 'kwidgetsaddons' 'kwindowsystem' 'kxmlgui'
+         'threadweaver' 'ktexteditor' 'kactivities' 'khtml' 'kholidays' 'kdiagram'
+         'kcontacts' 'kreport' 'qca-qt5')
+makedepends=('extra-cmake-modules' 'kdoctools' 'boost' 'docbook-xsl') # 'clang' vc fails clang
+source=("https://download.kde.org/stable/calligra/${pkgver}/${pkgname}-${pkgver}.tar.xz"
+        "https://github.com/KDE/calligra/commit/9a02a545e8606aa91aff2038da137226a9432e1a.diff")
+sha256sums=('e10c6f4a6fbf40da422d98d5138201f7db52236181c25641402e4ae4b0add336'
+            'a9d35b3f1a38e5597a65c2c4adc2b3a3344a5c927f1ccb4de25dca90179fe8ef')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  #patch -p1 -i ${srcdir}/9a02a545e8606aa91aff2038da137226a9432e1a.diff
+  #sed -i 's|KReport 3.0.0 EXACT QUIET|KReport 3.0 QUIET|' CMakeLists.txt
+}
+
+build() {
+  mkdir -p build
+  cd build
+  
+  #export CC=/usr/bin/clang
+  #export CXX=/usr/bin/clang++
+  
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
+    -DBUILD_TESTING=FALSE \
+    -DPACKAGERS_BUILD=true 
+  make
+}
+
+package() {
+  cd build
+  
+  make DESTDIR=${pkgdir} install
+}
+

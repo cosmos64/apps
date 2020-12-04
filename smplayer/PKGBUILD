@@ -1,24 +1,24 @@
 
 pkgname=smplayer
-pkgver=16.9.0
-_pkgver=16.8.0
+pkgver=20.6.0
+_pkgver=20.11.0
 _rev=r6994
-pkgrel=1
+pkgrel=2
 pkgdesc="Media player with built-in codecs that can play virtually all video and audio formats"
 arch=('x86_64')
-url="http://smplayer.sourceforge.net/"
+url="https://www.smplayer.info/"
 license=('GPL')
 depends=('qt5-multimedia' 'qt5-script' 'mpv')
-makedepends=('qt5-tools' 'subversion')
+makedepends=('qt5-tools')
 groups=('multimedia')
-source=("http://sourceforge.net/projects/smplayer/files/SMPlayer/${pkgver}/smplayer-${pkgver}.tar.bz2"
+source=("https://sourceforge.net/projects/smplayer/files/SMPlayer/${pkgver}/smplayer-${pkgver}.tar.bz2"
         "https://sourceforge.net/projects/smplayer/files/SMPlayer-themes/${_pkgver}/smplayer-themes-${_pkgver}.tar.bz2"
         'icons.tar.xz'
         'default-theme.tar.xz')
-md5sums=('1f17b5d35819a8729963e815c9761f0a'
-         '30dde6d9ee016879b121d4d28a427b2a'
+md5sums=('90f1b3cf797580d61517369bda1befcc'
+         '3d7b307487da5d97e0bc197f7f3f37f6'
          'a65b679cb82e21f8f67e703209654e8f'
-         '8a5a849c90973ad0df98c01044dd3db4')
+         '73e847ca7b4f1a8ac53c7a5a2692bf54')
 
 build() {
   cd ${pkgname}-${pkgver}
@@ -26,6 +26,9 @@ build() {
   rm -r src/default-theme
   mv -iv ${srcdir}/icons/ .
   mv -iv ${srcdir}/default-theme/ src/
+  # don't use default h20, set to classic to use KaOS icon set
+  sed -i -e 's|iconset = "H2O";|iconset = "";|' src/preferences.cpp
+  sed -i -e 's|style = "Fusion";|style = "QtCurve";|' src/preferences.cpp
   
   make PREFIX=/usr QMAKE=/usr/lib/qt5/bin/qmake LRELEASE=/usr/lib/qt5/bin/lrelease
   

@@ -1,32 +1,54 @@
 
 pkgname=freerdp
 _pkgname=FreeRDP
-pkgver=2.0.0beta
-#_pkgver=1.2.0-beta1-android9
-_commit=5b2455f3147aca395a441fc65b602938600f0788
-pkgrel=2
-pkgdesc="Free RDP client"
+pkgver=2.2.0
+_pkgver=2.2.0
+_commit=f8c9f438436a4492e37011396148d804f7e3651f
+pkgrel=3
+pkgdesc="Free implementation of the Remote Desktop Protocol (RDP)."
 arch=('x86_64')
-url="http://www.freerdp.com/"
-license=('GPL')
+url="https://www.freerdp.com/"
+license=('Apache')
 depends=('openssl' 'libxcursor' 'libcups' 'alsa-lib' 'libxext' 'libxdamage'
         'ffmpeg' 'libxkbfile' 'libxinerama' 'libxv' 'pulseaudio' 'libxrender' 
-        'libxfixes' 'gst-plugins-base' 'libxkbcommon' 'libxrandr') 
+        'libxfixes' 'gst-plugins-base' 'libxkbcommon' 'libxrandr' 'libjpeg-turbo'
+        'pcsclite' 'mbedtls' 'dbus-glib' 'wayland' 'gsm' 'lame' 'faad2' 'faac'
+        'libsoxr' ) # 'x264' 
 makedepends=('krb5' 'cmake' 'damageproto' 'xmlto' 'docbook-xsl')
-source=("https://github.com/FreeRDP/FreeRDP/archive/${_commit}.zip")
-md5sums=('02b6b125b31950a536ab61e1775fbe1c')
+#source=("https://github.com/FreeRDP/FreeRDP/archive/${_commit}.zip")
+source=("https://pub.freerdp.com/releases/${pkgname}-${_pkgver}.tar.gz")
+sha256sums=('19b30759e324ce7a9767af880116a4c571761e9ad9c5d6c98c5b302ff8c24c6c')
 
 build() {
-  mkdir build
+  mkdir -p build
   cd build
   
-  cmake ../${_pkgname}-${_commit} \
+  cmake ../${pkgname}-${_pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_INSTALL_LIBDIR=lib \
-    -DWITH_GSTREAMER_1_0=ON \
+    -DWITH_WAYLAND=ON \
     -DWITH_PULSE=ON \
-    -DWITH_CUPS=ON
+    -DWITH_CUPS=ON \
+    -DWITH_PCSC=ON \
+    -DWITH_JPEG=ON \
+    -DWITH_CAIRO=ON \
+    -DWITH_SWSCALE=ON \
+    -DWITH_MBEDTLS=ON \
+    -DWITH_GSM=ON \
+    -DWITH_LAME=ON \
+    -DWITH_FAAD2=ON \
+    -DWITH_FAAC=ON \
+    -DWITH_SOXR=ON \
+    -DWITH_GSSAPI=ON \
+    -DWITH_CHANNELS=ON \
+    -DWITH_CLIENT_CHANNELS=ON \
+    -DWITH_SERVER_CHANNELS=ON \
+    -DWITH_VAAPI=ON \
+    -DCHANNEL_URBDRC_CLIENT=ON \
+    -DWITH_SERVER=ON
+    #-DWITH_X264=ON \
+    
   make
 }
 

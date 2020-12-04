@@ -1,0 +1,45 @@
+--- a/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js	2020-09-18 21:13:18.397201886 +0200
++++ b/layout-templates/org.kde.plasma.desktop.defaultPanel/contents/layout.js	2020-09-18 21:13:18.300201877 +0200
+@@ -1,6 +1,6 @@
+ var panel = new Panel
+ var panelScreen = panel.screen
+-var freeEdges = {"bottom": true, "top": true, "left": true, "right": true}
++var freeEdges = {"right": true, "bottom": true, "top": true, "left": true}
+ 
+ for (i = 0; i < panelIds.length; ++i) {
+     var tmpPanel = panelById(panelIds[i])
+@@ -12,14 +12,14 @@
+     }
+ }
+ 
+-if (freeEdges["bottom"] == true) {
++if (freeEdges["right"] == true) {
++    panel.location = "right";
++} else if (freeEdges["bottom"] == true) {
+     panel.location = "bottom";
+ } else if (freeEdges["top"] == true) {
+     panel.location = "top";
+ } else if (freeEdges["left"] == true) {
+     panel.location = "left";
+-} else if (freeEdges["right"] == true) {
+-    panel.location = "right";
+ } else {
+     // There is no free edge, so leave the default value
+     panel.location = "top";
+@@ -42,11 +42,12 @@
+     }
+ }
+ 
+-var kickoff = panel.addWidget("org.kde.plasma.kickoff")
+-kickoff.currentConfigGroup = ["Shortcuts"]
+-kickoff.writeConfig("global", "Alt+F1")
++var kicker = panel.addWidget("org.kde.plasma.kicker")
++kicker.currentConfigGroup = ["Shortcuts"]
++kicker.writeConfig("global", "Alt+F1")
+ 
+-//panel.addWidget("org.kde.plasma.showActivityManager")
++panel.addWidget("org.kde.plasma.lock_logout")
++panel.addWidget("org.kde.plasma.calculator")
+ panel.addWidget("org.kde.plasma.pager")
+ panel.addWidget("org.kde.plasma.icontasks")
+ 

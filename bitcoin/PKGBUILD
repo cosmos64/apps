@@ -1,7 +1,7 @@
 
 pkgname=bitcoin
-pkgver=0.13.1
-pkgrel=1
+pkgver=0.20.1
+pkgrel=2
 arch=('x86_64')
 pkgdesc="Bitcoin is a peer-to-peer network based digital currency"
 url="http://www.bitcoin.org/"
@@ -9,13 +9,23 @@ license=('MIT')
 depends=('boost-libs' 'qt5-base' 'miniupnpc' 'qrencode' 'protobuf' 'libevent' 'zeromq')
 makedepends=('boost' 'qt5-tools')
 #source=("git://github.com/bitcoin/bitcoin.git")
-source=("https://github.com/bitcoin/bitcoin/archive/v${pkgver}.tar.gz")
-md5sums=('3ccb66404e6da9b995a607de997ca3bf')
+source=("https://github.com/bitcoin/bitcoin/archive/v${pkgver}.tar.gz"
+        "https://raw.githubusercontent.com/bitcoin-core/packaging/master/debian/bitcoin-qt.desktop"
+        'qt5.15.diff')
+md5sums=('737cae01e759d28ac3ece3a1ad9c69a7'
+         'a1322d92df28647f88332030f414a0da'
+         '20133f2006e7f23517d46bd573d1e1f3')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+
+  #patch -p1 -i ${srcdir}/qt5.15.diff
+}
 
 build() {
   cd ${pkgname}-${pkgver}
   #CXXFLAGS="$CXXFLAGS -DBOOST_VARIANT_USE_RELAXED_GET_BY_DEFAULT=1"
-  CXXFLAGS="-std=c++11"
+  #CXXFLAGS="-std=c++11"
 
   ./autogen.sh
   ./configure --prefix=/usr \
@@ -29,7 +39,7 @@ package() {
   cd ${pkgname}-${pkgver}
   make DESTDIR=${pkgdir} install
 
-  install -Dm644 contrib/debian/bitcoin-qt.desktop ${pkgdir}/usr/share/applications/bitcoin.desktop
+  install -Dm644 ../bitcoin-qt.desktop ${pkgdir}/usr/share/applications/bitcoin.desktop
   install -Dm644 share/pixmaps/bitcoin128.png ${pkgdir}/usr/share/pixmaps/bitcoin128.png
 
   install -Dm644 COPYING ${pkgdir}/usr/share/licenses/${pkgname}/COPYING

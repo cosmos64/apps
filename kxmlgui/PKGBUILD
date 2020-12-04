@@ -3,17 +3,25 @@
 source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=kxmlgui
-pkgver=${_kdever}
-pkgrel=1
+pkgver=${_kf5ver}
+pkgrel=2
 pkgdesc='KXMLGUI provides a framework for managing menu and toolbar actions in an abstract way'
 arch=('x86_64')
 url='https://projects.kde.org/projects/frameworks/kxmlgui'
 license=('LGPL')
 depends=('kglobalaccel' 'ktextwidgets' 'kf5-attica')
-makedepends=('extra-cmake-modules')
+makedepends=('extra-cmake-modules' 'qt5-tools')
 groups=('kf5')
-source=("http://download.kde.org/unstable/frameworks/${pkgver}/${pkgname}-${pkgver}.tar.xz")
-md5sums=(`grep ${pkgname}-$_kdever.tar.xz ../kf5.md5 | cut -d" " -f1`)
+source=("http://download.kde.org/stable/frameworks/${pkgver}/${pkgname}-${pkgver}.tar.xz"
+        "https://github.com/KDE/kxmlgui/commit/1bc3a0b41c0c119cd049160a87b09ea95a4532a0.diff")
+md5sums=(`grep ${pkgname}-${_kf5ver}.tar.xz ../kf5.md5 | cut -d" " -f1`
+         'e0079770a362edbb9561da33d5d1b627')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  # patches to revert 2 commits, used for wayland, use https://codereview.qt-project.org/#/c/195704/ instead
+  #patch -p1 -i ${srcdir}/78e572dadf64903bb7356b5fcfd763f6e898fa61.diff
+}
 
 build() {
   mkdir -p build
@@ -22,11 +30,11 @@ build() {
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_INSTALL_DIR=lib \
-    -DLIBEXEC_INSTALL_DIR=lib \
-    -DSYSCONF_INSTALL_DIR=/etc \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_LIBEXECDIR=lib \
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
     -DECM_MKSPECS_INSTALL_DIR=/usr/lib/qt5/mkspecs/modules \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DBUILD_TESTING=OFF
   make
 }
@@ -34,5 +42,5 @@ build() {
 package() {
   cd build
   
-  make DESTDIR="${pkgdir}" install
+  make DESTDIR=${pkgdir} install
 }

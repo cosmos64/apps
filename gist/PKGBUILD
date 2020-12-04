@@ -1,19 +1,19 @@
 
 pkgname=gist
-pkgver=4.5.0
+pkgver=6.0.0
 pkgrel=2
 pkgdesc="Provides a gist command to use from the terminal to upload content to https://gist.github.com/."
 arch=('x86_64')
-url="http://github.com/defunkt/gist"
+url="https://github.com/defunkt/gist"
 license=('MIT')
 depends=('ruby')
-source=("https://github.com/defunkt/${pkgname}/archive/v${pkgver}.tar.gz")
-md5sums=('e11782589936c011ea5e40bc8ca62533')
+source=("https://github.com/defunkt/gist/archive/v${pkgver}.tar.gz")
+md5sums=('3d00b0b8b399e35dcad003b9f4b5720e')
 
 package() {
-    cd "${srcdir}/${pkgname}-${pkgver}"
+    cd ${pkgname}-${pkgver}
 
-    install -Dm755 build/${pkgname} "${pkgdir}/usr/bin/${pkgname}"
-    install -Dm644 build/${pkgname}.1 "${pkgdir}/usr/share/man/man1/${pkgname}.1"
-    install -Dm644 LICENSE.MIT "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    install -Dm755 build/${pkgname} ${pkgdir}/usr/bin/${pkgname}
+    install -Dm644 build/${pkgname}.1 ${pkgdir}/usr/share/man/man1/${pkgname}.1
+    install -Dm644 LICENSE.MIT ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
 }

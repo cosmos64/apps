@@ -1,21 +1,28 @@
 
 pkgname=conky
-pkgver=1.10.5
+pkgver=1.11.6
 pkgrel=1
-pkgdesc="An advanced, highly configurable system monitor for X based on torsmo"
+pkgdesc="Advanced, highly configurable system monitor for X based on torsmo"
 arch=('x86_64')
-url="http://conky.sourceforge.net/"
+url="https://github.com/brndnmtthws/conky/wiki"
 license=('custom')
-depends=('alsa-lib' 'libxml2' 'curl' 'wireless_tools' 'libxft' 'glib2' 'libxdamage' 'imlib2' 'mpd' 'lua'
-         'libxinerama')
+depends=('alsa-lib' 'libxml2' 'curl' 'wireless_tools' 'libxft' 'glib2' 'libxdamage' 'imlib2' 'lua'
+         'mpd' 'libxinerama')
 makedepends=('pkgconfig' 'cmake')
 groups=('utils')
 backup=('etc/conky/conky.conf' 'etc/conky/conky_no_x11.conf')
 source=("https://github.com/brndnmtthws/conky/archive/v${pkgver}.tar.gz"
         'conky.conf')
-md5sums=('b3c198e27c4ff61f4ffddf560378df8f'
+md5sums=('8e7a58c1ecbe65628475361cc16a3938'
          '3e8bc1cf7cf7587ccc5b333ef33284e0')
-
+    
+prepare() {
+  cd ${pkgname}-${pkgver}
+  
+  sed -i -e 's|REQUIRED lua>=5.3 lua5.3 lua-5.3 lua53 lua5.2 lua-5.2 lua52|REQUIRED lua|g' 3rdparty/toluapp/CMakeLists.txt
+  sed -i -e 's|lua>=5.3|lua|g' cmake/ConkyPlatformChecks.cmake
+}
+         
 build() {
   mkdir -p build
   cd build

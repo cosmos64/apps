@@ -1,30 +1,31 @@
 
 pkgname=audacity
-pkgver=2.1.2
-pkgrel=4
+pkgver=2.4.2
+pkgrel=3
 pkgdesc="A program that lets you manipulate digital audio waveforms"
 arch=('x86_64')
-url="http://web.audacityteam.org/"
+url=""
 license=('GPL')
-depends=('libvorbis' 'libmad' 'libid3tag' 'wxgtk2.9' 'lame' 'hicolor-icon-theme' 'ffmpeg'
-         'shared-mime-info' 'desktop-file-utils' 'redland' 'jack' 'soundtouch' 'libsoxr' 'lilv')
-makedepends=('cmake' 'zip' 'python2' 'pkgconfig')
+depends=('libvorbis' 'libmad' 'libid3tag' 'wxgtk' 'lame' 'hicolor-icon-theme' 'ffmpeg'
+         'shared-mime-info' 'desktop-file-utils' 'redland' 'jack' 'soundtouch' 'libsoxr'
+         'lilv' 'flac' 'libsndfile' 'libsamplerate' 'suil' 'portmidi')
+makedepends=('cmake' 'zip' 'pkgconfig')
 options=('!makeflags')
-source=("https://github.com/audacity/audacity/archive/Audacity-${pkgver}.tar.gz"
-        'ffmpeg.patch')
-md5sums=('84488cd755fe14cbc39769dd1abb7113'
-         '62bd98bd4f27e8152556d3b274c8a8c7')
+source=("https://github.com/audacity/audacity/archive/Audacity-${pkgver}.tar.gz")
+sha256sums=('cdb4800c8e9d1d4ca19964caf8d24000f80286ebd8a4db566c2622449744c099')
 
 build() {
-  cd ${pkgname}-Audacity-${pkgver}
-  patch -p1 -i "${srcdir}/ffmpeg.patch"
-
-  ./configure --prefix=/usr --enable-unicode # --with-ffmpeg=no
+  mkdir -p build
+  cd build
+  
+  cmake ../${pkgname}-Audacity-${pkgver} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release
   make
 }
 
 package() {
-  cd ${pkgname}-Audacity-${pkgver}
+  cd build
   
   make DESTDIR=${pkgdir} install
 }

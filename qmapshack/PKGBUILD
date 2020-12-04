@@ -1,23 +1,36 @@
 
 pkgname=qmapshack
-pkgver=1.7.1
+pkgver=1.15.1
 pkgrel=1
 pkgdesc="Plan your next outdoor trip or to visualize and archive all the GPS recordings, next generation of the QLandkarte GT application"
 arch=('x86_64')
-url="https://bitbucket.org/maproom/qmapshack/wiki/Home"
+url="https://github.com/Maproom/qmapshack/wiki"
 license=('GPL')
-depends=('gdal' 'gpsd' 'libdmtx' 'libexif' 'libmariadbclient' 'mesa' 'postgresql-libs'
-         'shared-mime-info' 'unixodbc' 'glu' 'qt5-webkit' 'proj' 'qt5-script' 'routino')
+depends=('gdal' 'libdmtx' 'libexif' 'mariadb' 'mesa' 'postgresql-libs'
+         'shared-mime-info' 'unixodbc' 'glu' 'qtwebengine' 'proj' 'qt5-script' 
+         'routino' 'quazip')
 makedepends=('cmake' 'extra-cmake-modules' 'qt5-tools')
 groups=('utils')
-source=("https://bitbucket.org/maproom/qmapshack/downloads/${pkgname}-${pkgver}.tar.gz")
-md5sums=('1265a4c009fa2fe9cd286b232a8277da')
+source=("https://github.com/Maproom/qmapshack/archive/V_${pkgver}.tar.gz"
+        'proj.patch'
+        'quazip.patch')
+md5sums=('b33337a0994cba04b03719b0e82360d2'
+         '1a2192dfa8b63fce503a59d6917918a5'
+         'cbdc25ae8121f347ddfedc10501d589e')
+
+prepare() {
+  cd ${pkgname}-V_${pkgver}
+  
+  patch -p1 -i ${srcdir}/proj.patch
+  patch -p1 -i ${srcdir}/quazip.patch
+  #sed -i 's|PROJ4|PROJ|' CMakeLists.txt
+}
 
 build() {
   mkdir -p build
   cd build
  
-  cmake ../${pkgname}-${pkgver} \
+  cmake ../${pkgname}-V_${pkgver} \
       -DCMAKE_INSTALL_PREFIX=/usr \
       -DCMAKE_BUILD_TYPE=Release 
       
@@ -28,5 +41,5 @@ package(){
   cd build
   make DESTDIR=${pkgdir} install
   
-  install -Dm644 ../${pkgname}-${pkgver}/LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+  install -Dm644 ../${pkgname}-V_${pkgver}/LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
 }

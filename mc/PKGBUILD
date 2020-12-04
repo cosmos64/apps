@@ -1,10 +1,10 @@
 
 pkgname=mc
-pkgver=4.8.18
+pkgver=4.8.25
 pkgrel=1
 pkgdesc="Text based filemanager/shell that emulates Norton Commander"
 arch=('x86_64')
-url="http://www.ibiblio.org/mc/"
+url="https://www.midnight-commander.org"
 license=('GPL')
 depends=('e2fsprogs' 'glib2' 'pcre' 'gpm' 'libssh2' 'zip' 'unrar' 'perl'
          'gawk' 'aspell' 'samba' 'slang')
@@ -13,8 +13,8 @@ optdepends=('p7zip: support for 7zip archives'
             'mtools: ms-dos tool')
 groups=('system')
 options=('!emptydirs' '!makeflags')
-source=("http://www.midnight-commander.org/downloads/${pkgname}-${pkgver}.tar.bz2")
-md5sums=('cc56f0c9abd63c4caa3636bba3a08bfb')
+source=("https://www.midnight-commander.org/downloads/${pkgname}-${pkgver}.tar.xz")
+sha256sums=('ffc19617f20ebb23330acd3998b7fd559a042d172fa55746d53d246697b2548a')
 
 build() {
 	cd ${pkgname}-${pkgver}
@@ -25,7 +25,8 @@ build() {
 	    --enable-background \
 	    --with-x \
 	    --enable-vfs-smb \
-	    --libexecdir=/usr/lib
+	    --libexecdir=/usr/lib \
+	    --with-screen=slang
 
 	make 
 }

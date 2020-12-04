@@ -10,27 +10,27 @@ arch=('x86_64')
 url='https://github.com/KDE/kwin'
 license=('LGPL')
 depends=('qt5-multimedia' 'plasma-framework' 'kcmutils' 'kinit' 'knewstuff' 'xcb-util-cursor'
-         'libepoxy' 'kwayland' 'kdecoration' 'libinput' 'kscreenlocker' 'breeze' 'qt5-virtualkeyboard'
-         'xorg-server')
+         'libepoxy' 'kwayland-server' 'kdecoration' 'libinput' 'kscreenlocker' 'kdeclarative' 'breeze'
+         'qt5-virtualkeyboard' 'xorg-server' 'qt5-sensors' 'qt5-quickcontrols2')
 makedepends=('extra-cmake-modules' 'kdoctools' 'qt5-tools')
-groups=('plasma5')
-conflicts=('kde-workspace')
-replaces=('kde-workspace')
-#source=("http://download.kde.org/stable/plasma/$pkgver/$pkgname-$pkgver.tar.xz")
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz")
-md5sums=(`grep ${pkgname}-$_plasmaver.tar.gz ../kf5.md5 | cut -d" " -f1`)
+groups=('kdeplasma5')
+options=('debug')
+source=("https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz")
+#source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz")
+md5sums=(`grep ${pkgname}-${_plasmaver}.tar.xz ../kf5.md5 | cut -d" " -f1`)
 
 prepare () {
-  cd ${pkgname}-${__pkgver}
+  cd ${pkgname}-${pkgver}
   #patch -p1 -i ${srcdir}/closeview.diff
   #sed -i 's|add_subdirectory(tests)|#add_subdirectory(tests)|' ${srcdir}/${pkgname}-${pkgver}/CMakeLists.txt
+  #rm -rf po/id/docs
 }  
 
 build() {
   mkdir -p build
   cd build
   
-  cmake ../${pkgname}-${__pkgver} \
+  cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DKDE_INSTALL_LIBDIR=lib \
@@ -45,6 +45,6 @@ build() {
 package() {
   cd build
 
-  make DESTDIR="${pkgdir}" install
+  make DESTDIR=${pkgdir} install
 }
 

@@ -1,8 +1,8 @@
 
 pkgname=grub2-editor
-pkgver=0.7.0
-pkgrel=1
-_commit=1d24fd0df0f7733240b051fb89535433cbd2bdc1
+pkgver=0.8.1
+pkgrel=2
+_commit=2f7de2ce74e8f92107c26efdfad90d9cdbcb9a06
 pkgdesc="A KDE control module for configuring the GRUB2 bootloader."
 arch=('x86_64')
 url="https://github.com/maz-1/grub2-editor"
@@ -12,7 +12,7 @@ depends=('kcoreaddons' 'ki18n' 'kauth' 'kconfigwidgets' 'kio' 'solid'
 makedepends=('extra-cmake-modules' 'kdoctools')
 groups=('system')
 source=("https://github.com/maz-1/grub2-editor/archive/${_commit}.zip")
-md5sums=('491a56e13552475309fb4245dc4289d6')
+md5sums=('22a79788409e75bd1598d0f10f8e47a9')
 
 build() {
   mkdir -p build
@@ -21,10 +21,10 @@ build() {
   cmake ../${pkgname}-${_commit} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DSYSCONF_INSTALL_DIR=/etc \
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
     -DBUILD_TESTING=OFF \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-    -DLIB_INSTALL_DIR=lib
+    -DKDE_INSTALL_LIBDIR=lib
   make
 }
 

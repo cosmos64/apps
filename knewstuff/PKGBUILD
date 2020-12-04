@@ -4,16 +4,22 @@ source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=knewstuff
 pkgver=${_kf5ver}
-pkgrel=1
+pkgrel=3
 pkgdesc='KNewStuff'
 arch=('x86_64')
 url='https://projects.kde.org/projects/frameworks/knewstuff'
 license=('LGPL')
-depends=('kf5-attica' 'kconfigwidgets' 'kio')
+depends=('kf5-attica' 'kconfigwidgets' 'kio' 'kirigami' 'kpackage')
 makedepends=('extra-cmake-modules')
 groups=('kf5')
 source=("http://download.kde.org/unstable/frameworks/${pkgver}/${pkgname}-${pkgver}.tar.xz")
-md5sums=(`grep ${pkgname}-$_kf5ver.tar.xz ../kf5.md5 | cut -d" " -f1`)
+md5sums=(`grep ${pkgname}-${_kf5ver}.tar.xz ../kf5.md5 | cut -d" " -f1`)
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+  
+  #patch -p1 -i ${srcdir}/e98a2e4b6f0042c10a31023ef37a3534832135b6.diff
+}
 
 build() {
   mkdir -p build
@@ -22,14 +28,14 @@ build() {
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_INSTALL_DIR=lib \
+    -DKDE_INSTALL_LIBDIR=/usr/lib \
     -DECM_MKSPECS_INSTALL_DIR=/usr/lib/qt5/mkspecs/modules \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DBUILD_TESTING=OFF
   make
 }
 
 package() {
   cd build
-  make DESTDIR="${pkgdir}" install
+  make DESTDIR=${pkgdir} install
 }

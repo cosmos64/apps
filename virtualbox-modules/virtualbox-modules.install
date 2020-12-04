@@ -1,12 +1,12 @@
 common_install()
 {
-    EXTRAMODULES='extramodules-4.8'
+    EXTRAMODULES='extramodules-5.8'
     depmod -a $(cat /lib/modules/$EXTRAMODULES/version)
 }
 
 load()
 {
-    modules=(vboxnetadp vboxnetflt vboxpci vboxdrv)
+    modules=(vboxnetadp vboxnetflt vboxdrv)
 
     echo -n 'Loading modules: '
         for _m in "${modules[@]}"; do
@@ -17,7 +17,7 @@ load()
 
 unload()
 {
-    modules=(vboxnetadp vboxnetflt vboxpci vboxdrv)
+    modules=(vboxnetadp vboxnetflt vboxdrv)
 
     echo -n 'Unloading modules: '
     for _m in "${modules[@]}"; do

@@ -1,24 +1,24 @@
 
 pkgname=tellico
-pkgver=2.9.105
-_pkgver=2.9.92
-pkgrel=2
+pkgver=3.3.4
+_pkgver=3.3.4
+pkgrel=1
 pkgdesc="A collection manager for KDE"
 arch=('x86_64')
-url="http://tellico-project.org/"
+url="https://tellico-project.org/"
 license=('GPL')
 depends=('karchive' 'kcodecs' 'kconfig' 'kconfigwidgets' 'kcoreaddons' 'kcrash' 'kiconthemes'
          'kitemmodels' 'ki18n' 'kio' 'solid' 'kwidgetsaddons' 'kwindowsystem' 'kguiaddons' 'kxmlgui' 
-         'kjobwidgets' 'kwallet' 'khtml' 'kfilemetadata' 'knewstuff' 'qimageblitz' 'libksane' 
-         'taglib' 'libdiscid' 'poppler-qt5' 'v4l-utils' 'libkcddb5') # 'yaz' 'exempi' 
+         'kjobwidgets' 'kwallet' 'khtml' 'kfilemetadata' 'knewstuff' 'libksane' 
+         'taglib' 'libdiscid' 'poppler-qt5' 'v4l-utils' 'libkcddb5' 'libcdio') # 'yaz' 'exempi' 
 makedepends=('extra-cmake-modules' 'kdoctools')
 groups=('office')
-source=("http://tellico-project.org/files/${pkgname}-${_pkgver}.tar.xz")
+source=("https://tellico-project.org/files/${pkgname}-${_pkgver}.tar.xz")
 #source=("https://github.com/KDE/tellico/archive/${_commit}.zip")
-md5sums=('7af9f98569efbeec929e87681257fde2')
+md5sums=('e5c1f9815012f28511df34e5471e5fb7')
 
 build() {
-  mkdir build
+  mkdir -p build
   cd build
   
   cmake ../${pkgname}-${_pkgver} \
@@ -37,5 +37,5 @@ build() {
 package() {
   cd build
   
-  make DESTDIR="${pkgdir}" install
+  make DESTDIR=${pkgdir} install
 }

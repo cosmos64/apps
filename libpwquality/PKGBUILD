@@ -1,28 +1,29 @@
 
 pkgname=libpwquality
-pkgver=1.3.0
+pkgver=1.4.4
 pkgrel=1
 pkgdesc="Library for password quality checking and generating random passwords"
 arch=('x86_64')
-url="https://fedorahosted.org/libpwquality/"
+url="https://github.com/libpwquality/libpwquality"
 license=('GPL')
 options=('!libtool')
-depends=('cracklib' 'python2')
-source=("https://fedorahosted.org/releases/l/i/libpwquality/$pkgname-$pkgver.tar.bz2")
-md5sums=('2a3d4ba1d11b52b4f6a7f39622ebf736')
+depends=('cracklib' 'python3')
+source=("https://github.com/libpwquality/libpwquality/releases/download/${pkgname}-${pkgver}/${pkgname}-${pkgver}.tar.bz2")
+md5sums=('1fe43f6641dbf1e1766e2a02cf68a9c3')
 
 build() {
-    cd "$pkgname-$pkgver"
+    cd ${pkgname}-${pkgver}
 
     ./configure --prefix=/usr \
         --sysconfdir=/etc \
         --localstatedir=/var \
-        --disable-static
+        --disable-static \
+        --with-python-binary=python3
     make
 }
 
 package() {
-    cd "$pkgname-$pkgver"
+    cd ${pkgname}-${pkgver}
 
-    make DESTDIR="$pkgdir" install
+    make DESTDIR=${pkgdir} install
 }

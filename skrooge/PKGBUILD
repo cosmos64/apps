@@ -1,26 +1,26 @@
 
 pkgname=skrooge
-pkgver=2.5.0
-pkgrel=1
+pkgver=2.23.0
+pkgrel=4
 pkgdesc="Allows you to manage your personal finances in KDE"
 arch=('x86_64')
-url="http://skrooge.org"
+url="https://skrooge.org"
 license=('GPL')
 depends=('grantlee' 'karchive' 'kcoreaddons' 'kconfig' 'ki18n' 'kitemviews' 'kwidgetsaddons' 
-         'kwindowsystem' 'kcompletion' 'kjobwidgets' 'kconfigwidgets' 'kdesignerplugin' 'kiconthemes' 'kio'
-         'khtml' 'knewstuff' 'kparts' 'kwallet' 'kxmlgui' 'kdelibs4support' 'plasma-workspace' # 'aqbanking' 
-         'boost-libs' 'libofx' 'qca-qt5' 'kactivities' 'sqlcipher' 'qt5-webkit')
+         'kwindowsystem' 'kcompletion' 'kjobwidgets' 'kconfigwidgets' 'kiconthemes' 'kio'
+         'knewstuff' 'kparts' 'kwallet' 'kxmlgui' 'plasma-workspace' # 'aqbanking' 
+         'boost-libs' 'libofx' 'qca-qt5' 'kactivities' 'sqlcipher' 'qtwebengine')
 makedepends=('extra-cmake-modules' 'kdoctools' 'docbook-xsl' 'boost' 'clang')
 groups=('office')
-source=("http://download.kde.org/stable/skrooge/${pkgname}-${pkgver}.tar.xz"
-        'sqlite3.patch')
-md5sums=('d20b61680563cf0ed89f25a1b93f6a63'
-         '5e98360d8ce1c90baef8ed7bd881d884')
+source=("https://download.kde.org/stable/skrooge/${pkgname}-${pkgver}.tar.xz"
+        'qt5.13.patch')
+sha256sums=('aae4a86ead02b644f0b1cab5bdd692c4ce05ce4d93a0b535e4a5f6d28f916382'
+            '77409c3b0b2458858e5600e37d6ce68575f1e52eeeaf9c0ce420b54be92490aa')
 
 prepare() {
-  cd $pkgname-${pkgver}
+  cd ${pkgname}-${pkgver}
   #sed -e "s/FIND_PACKAGE(KActivities)/FIND_PACKAGE(KF5Activities)/" -i ${srcdir}/$pkgname/skgbasegui/CMakeLists.txt
-  #patch -p1 -i ${srcdir}/sqlite3.patch
+  #patch -p1 -i ${srcdir}/qt5.13.patch
 }
          
 build() {
@@ -38,7 +38,9 @@ build() {
     -DKDE_INSTALL_QMLDIR=/usr/lib/qt5/qml \
     -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-    -DSKG_BUILD_TEST=OFF 
+    -DSKG_BUILD_TEST=OFF \
+    -DSKG_DESIGNER=OFF \
+    -DSKG_WEBENGINE=ON
   make
 }
 

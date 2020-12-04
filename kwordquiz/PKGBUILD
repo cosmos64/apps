@@ -5,42 +5,33 @@ source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 pkgname=kwordquiz
 pkgver=${_kdever}
 pkgrel=1
-pkgdesc="Flash Card Trainer"
-url="http://kde.org/applications/education/kwordquiz/"
+pkgdesc="General purpose flash card program which can be used for vocabulary learning and other subjects"
+url="https://apps.kde.org/en/kwordquiz"
 arch=('x86_64')
 license=('GPL' 'LGPL' 'FDL')
 depends=('ki18n' 'kcrash' 'sonnet' 'kconfig' 'kconfigwidgets' 'kguiaddons' 'kiconthemes' 'kitemviews' 
-         'knotifyconfig' 'kio' 'knewstuff' 'knotifications' 'kxmlgui' 'kdelibs4support' 'kdeclarative'
+         'knotifyconfig' 'knewstuff' 'knotifications' 'kwindowsystem' 'kxmlgui'
          'libkeduvocdocument' 'phonon-qt5')
 makedepends=('extra-cmake-modules' 'kdoctools')
-conflicts=('kdeedu-kwordquiz')
-replaces=('kdeedu-kwordquiz')
-groups=('kde' 'kdeedu' 'kde-uninstall' 'education')
-source=("$_mirror/${pkgname}-$_kdever.tar.xz")
-md5sums=(`grep ${pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
+groups=('kde' 'kde-edu' 'kde-uninstall' 'education')
+source=("$_mirror/${pkgname}-${_kdever}.tar.xz")
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
 
 prepare() {
-  cd $pkgname-${pkgver}
-  #sed -i -e 's|add_subdirectory( doc )|#add_subdirectory( doc )|' ${srcdir}/${pkgname}/CMakeLists.txt
+    cd ${pkgname}-${pkgver}
+    #sed -i -e 's|add_subdirectory( doc )|#add_subdirectory( doc )|' ${srcdir}/${pkgname}/CMakeLists.txt
 }
 
 build() {
-  mkdir -p build
-  cd build
-  
-  cmake ../${pkgname}-${pkgver} \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_INSTALL_DIR=lib \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
-    -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-    -DBUILD_TESTING=OFF 
-  make
+    cmake -B build -S ${pkgname}-${pkgver} \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DBUILD_TESTING=OFF
+    cmake --build build
 }
 
 package() {
-  cd build
 
-  make DESTDIR=${pkgdir} install
+    DESTDIR=${pkgdir} cmake --install build
 }
 

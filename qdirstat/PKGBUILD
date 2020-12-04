@@ -1,0 +1,26 @@
+
+pkgname=qdirstat
+pkgver=1.7
+_pkgver=1.7
+pkgrel=1
+pkgdesc="Qt-based directory statistics: KDirStat without any KDE -- from the author of the original KDirStat."
+url="https://github.com/shundhammer/qdirstat"
+arch=('x86_64')
+license=('GPL')
+depends=('qt5-base')
+makedepends=('qt5-tools')
+source=("https://github.com/shundhammer/qdirstat/archive/${_pkgver}.tar.gz")
+md5sums=('8b7541ee55ee53ce0ac2fddca435f162')
+
+build() {  
+  cd ${pkgname}-${_pkgver}
+
+  /usr/lib/qt5/bin/qmake
+  make
+}
+
+package() {
+  cd ${pkgname}-${_pkgver}
+
+  make INSTALL_ROOT=${pkgdir} install
+}

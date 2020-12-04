@@ -1,33 +1,41 @@
 
 pkgname=darktable
-pkgver=2.0.7
-_pkgver=2.0.7
-pkgrel=2
+pkgver=3.2.1
+_pkgver=3.2.1
+pkgrel=1
 pkgdesc="Open source photography workflow application and RAW developer"
 arch=('x86_64')
-url="http://darktable.sf.net/"
+url="https://www.darktable.org/"
 license=('GPL3')
-depends=('exiv2' 'intltool' 'lcms2' 'lensfun' 'libglade' 'dbus-glib' 'curl' 'kwallet'
+depends=('exiv2' 'lcms2' 'lensfun' 'dbus-glib' 'curl' 'kwallet'
          'libgphoto2' 'openexr' 'sqlite' 'libxslt' 'libsoup' 'json-glib' 'flickcurl' 'librsvg'
-         'colord' 'graphicsmagick' 'sdl' 'libwebp' 'openjpeg' 'gtk3' 'pugixml')
-makedepends=('cmake')
+         'colord' 'graphicsmagick' 'libwebp' 'gtk3' 'pugixml' 'openjpeg')
+makedepends=('cmake' 'clang' 'intltool')
+optdepends=('kde-gtk-config: gtk integration settings for Plasma')
 options=('!libtool')
-#source=("https://github.com/darktable-org/darktable/releases/download/release-${pkgver}/darktable-${pkgver}.tar.xz")
-source=("https://github.com/darktable-org/darktable/archive/release-${pkgver}.tar.gz")
-md5sums=('7ad1d6629653270eb915f4fc6a0189d8')
+source=("https://github.com/darktable-org/darktable/releases/download/release-${pkgver}/darktable-${_pkgver}.tar.xz")
+sha256sums=('6e3683ea88dc0a0271be7eca4fd594b9e46b1b7194847825a8d0a0c12bdeb90c')
+
+prepare() {
+  cd ${pkgname}-${_pkgver}
+  # https://github.com/darktable-org/darktable/issues/4752
+  #./build.sh --disable-opencl
+}
 
 build() {
   mkdir -p build
   cd build
   
   CXXFLAGS+=" -fpermissive"
-  cmake ../${pkgname}-release-${pkgver} \
+  cmake ../${pkgname}-${_pkgver} \
       -DCMAKE_INSTALL_PREFIX=/usr \
       -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_LIBDIR=lib \
       -DBINARY_PACKAGE_BUILD=1 \
       -DBUILD_USERMANUAL=False \
       -DDONT_USE_INTERNAL_LUA=Off \
-      -DUSE_COLORD=On 
+      -DUSE_COLORD=On \
+      -DTESTBUILD_OPENCL_PROGRAMS=Off
   make
 }
 

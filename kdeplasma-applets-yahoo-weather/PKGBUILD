@@ -2,8 +2,8 @@
 pkgname=kdeplasma-applets-yahoo-weather
 _pkgname=com.librehat.yahooweather
 pkgver=5.2.0
-_commit=4691817
-pkgrel=1
+_commit=7c063fc
+pkgrel=2
 pkgdesc="Yahoo! Weather Widget written in QML."
 arch=('x86_64')
 url="https://www.kde-look.org/p/998912/"
@@ -11,9 +11,9 @@ license=('GPL')
 depends=('plasma-framework')
 makedepends=('git' 'zip')
 groups=('kdeplasma-addons')
-install=$pkgname.install
-source=("https://github.com/librehat/${_pkgname}/tarball/master/${_pkgname}-${pkgver}.tar.gz")
-md5sums=('826d1168e01dc79167b140bb81cad6b5')
+install=${pkgname}.install
+source=("https://github.com/librehat/com.librehat.yahooweather/tarball/master/${_pkgname}-${pkgver}.tar.gz")
+md5sums=('491d93ea191bd91f11200aa0479bc08b')
 
 build() {
   cd librehat-${_pkgname}-${_commit}/

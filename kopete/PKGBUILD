@@ -3,49 +3,51 @@
 source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=kopete
-#pkgver=${_kdever}
-pkgver=16.03.70
+pkgver=${_kdever}
 pkgrel=1
 pkgdesc='Instant Messenger'
 url='http://kde.org/applications/internet/kopete/'
 arch=('x86_64')
 license=('GPL' 'LGPL' 'FDL')
-groups=('kde' 'kdenetwork' 'kde-uninstall' 'network')
+#groups=('kde' 'kde-network' 'kde-uninstall' 'network')
 depends=('kcoreaddons' 'ki18n' 'kcmutils' 'khtml' 'knotifyconfig' 'kparts' 'kwallet'
-         'kdelibs4support' 'kconfig' 'kemoticons' 'kdbusaddons' 'kcontacts' 'libkleo'
-         'ktexteditor' 'kdnssd' 'kio' 'solid' 'gpgmepp' # 'kdepimlibs'
-         'libotr' 'libidn' 'qimageblitz' 'libgadu' 'ortp' 'libxss' 'v4l-utils' 'mediastreamer'
+         'kdelibs4support' 'ktexteditor' 'kcrash' 'kconfig' 'kemoticons' 'kdbusaddons' 'kdnssd'
+         'kcontacts' 'kidentitymanagement' 'libkleo' 'gpgme'        
+         'libotr' 'libidn' 'libxss' 'v4l-utils' 'libgadu' # 'mediastreamer' 'ortp' 
          'jsoncpp' 'qca-qt5' 'sqlite' 'speex' 'phonon-qt5')
-makedepends=('extra-cmake-modules' 'kdoctools' 'git' 'boost')
-install=${pkgname}.install
-#source=("$_mirror/${_pkgname}-$_kdever.tar.xz")
-#md5sums=(`grep ${_pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
-source=("git://anongit.kde.org/kopete.git#branch=kf5")
-md5sums=('SKIP')
+makedepends=('extra-cmake-modules' 'kdoctools' 'boost')
+source=("$_mirror/${pkgname}-${_kdever}.tar.xz")
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
+#source=("https://github.com/KDE/kopete/archive/${_commit}.zip")
+#md5sums=('4b25343c3082c4b40919ab82c6290296')
 
 prepare() {
-  cd $srcdir/$pkgname
-  sed -i -e 's|NAMES kleo/kleo_export.h|NAMES libkleo/kleo_export.h|' cmake/modules/FindKleopatra.cmake
+  cd ${pkgname}-${pkgver}
+  sed -i -e 's|NAMES kleo/kleo_export.h|NAMES KF5/libkleo/kleo_export.h|' cmake/modules/FindKleopatra.cmake
   #patch -p1 -i "$srcdir/kde_bug309119.diff" 
 }
 
 build() {
-  mkdir build
+  mkdir -p build
   cd build
   
-  cmake ../${pkgname} \
+  cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
     -DCMAKE_SKIP_RPATH=ON \
-    -DDWITH_jabber=ON \
-    -DWITH_skype=ON
+    -DBUILD_TESTING=OFF \
+    -DWITH_jabber=ON \
+    -DWITH_libjingle=OFF \
+    -DWITH_skype=ON \
+    -DWITH_oscar=OFF
   make
 }
 
 package() {
   cd build
   
-  make DESTDIR=$pkgdir install
+  make DESTDIR=${pkgdir} install
 }

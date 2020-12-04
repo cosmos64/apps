@@ -3,45 +3,32 @@
 source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=ktouch
-pkgver=16.11.70
-#pkgver=${_kdever}
-_commit=be44b176fa51fb6fadf5963b571a36ecb9762257
+pkgver=${_kdever}
 pkgrel=1
-pkgdesc="Touch Typing Tutor"
-url="http://kde.org/applications/education/ktouch/"
+pkgdesc="Typewriter trainer for learning to touch type"
+url="https://apps.kde.org/en/ktouch"
 arch=('x86_64')
 license=('GPL' 'LGPL' 'FDL')
 depends=('kconfig' 'kconfigwidgets' 'kcoreaddons' 'kdeclarative' 'ki18n' 'kio' 'knewstuff' 'kwidgetsaddons'
-         'kxmlgui' 'kitemviews' 'kcmutils' 'ktexteditor' 'kwindowsystem' 'kqtquickcharts') # 'libxkbfile')
+         'kxmlgui' 'kitemviews' 'kcmutils' 'ktexteditor' 'kwindowsystem' 'kqtquickcharts' 'kiconthemes' 'qt5-quickcontrols2')
 makedepends=('extra-cmake-modules' 'kdoctools')
-groups=('kde' 'kdeedu' 'kde-uninstall' 'education')
-#source=("$_mirror/${_pkgname}-$_kdever.tar.xz")
-#md5sums=(`grep ${_pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
-source=("https://github.com/KDE/ktouch/archive/${_commit}.zip")
-md5sums=('8b6adab3355bd0c4a3ab265779ef3e3a')
+groups=('kde' 'kde-edu' 'kde-uninstall' 'education')
+source=("$_mirror/${pkgname}-${_kdever}.tar.xz")
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
 
 prepare() {
-  cd ${pkgname}-${_commit}
-  #sed -i -e 's|"dtd/kdex.dtd"|"dtd/kdedbx45.dtd"|' ${srcdir}/${pkgname}/doc/index.docbook
+    cd ${pkgname}-${pkgver}
+    sed -i -e 's|Exec=ktouch|Exec=ktouch -qwindowtitle %c %u|' org.kde.ktouch.desktop
 }
 
 build() {
-  mkdir build
-  
-  cd build
-  cmake ../${pkgname}-${_commit} \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/usr \
-    -DKDE_INSTALL_LIBDIR=lib \
-    -DKDE_INSTALL_LIBEXECDIR=lib \
-    -DKDE_INSTALL_SYSCONFDIR=/etc \
-    -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
-    -DBUILD_TESTING=OFF 
-  make
+    cmake -B build -S ${pkgname}-${pkgver} \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr
+    cmake --build build
 }
 
 package() {
-  cd build
-  
-  make DESTDIR=${pkgdir} install
+
+    DESTDIR=${pkgdir} cmake --install build
 }

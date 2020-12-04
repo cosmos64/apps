@@ -1,27 +1,25 @@
 
 pkgname=alpm_octopi_utils
-pkgver=1.0.0
+pkgver=1.0.3
 pkgrel=1
-_commit=6d93c06d0feec0df7e5958c33df281eda91a6700
+_commit=2bb9349507f8155155c9b5f12b1f30e60e157d30
 pkgdesc="Alpm utils for Octopi"
 url="https://octopiproject.wordpress.com/"
 arch=('x86_64')
 license=('GPL3')
-makedepends=('vala')
+depends=('pacman')
+makedepends=('vala' 'cmake')
 source=("https://github.com/aarnt/${pkgname}/archive/${_commit}.zip")
-md5sums=('e08da8f28da2bdaae0f267653aaec009')
+md5sums=('8c555a95929445b935248a0865e07fbf')
          
 build() {
-   cd ${pkgname}-${_commit}
-   
-   make
+  cmake -B build -S ${pkgname}-${_commit} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr
+  cmake --build build
 }
 
 package() {
-   cd ${pkgname}-${_commit}
-   
-   install -D -m755 src/libalpm_octopi_utils.so ${pkgdir}/usr/lib/libalpm_octopi_utils.so
-   install -D -m644 src/libalpm_octopi_utils.pc ${pkgdir}/usr/lib/pkgconfig/libalpm_octopi_utils.pc
-   install -D -m644 src/alpm_octopi_utils.h ${pkgdir}/usr/include/alpm_octopi_utils.h   
 
+  DESTDIR=${pkgdir} cmake --install build
 }

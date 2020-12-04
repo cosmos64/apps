@@ -1,30 +1,31 @@
 
 pkgname=jsoncpp
-pkgver=1.7.7
+pkgver=1.9.4
 pkgrel=1
 pkgdesc="A JSON C++ library"
 url='https://github.com/open-source-parsers/jsoncpp'
 license=('custom:Public_Domain')
 arch=('x86_64')
-depends=('gcc-libs' 'python2')
-makedepends=('cmake')
+depends=('gcc-libs' 'python3')
+makedepends=('meson' 'ninja')
 source=("https://github.com/open-source-parsers/jsoncpp/archive/${pkgver}.tar.gz")
-md5sums=('9b51c65c563463220a8cb5fa33d525f8')
+md5sums=('4757b26ec89798c5247fa638edfdc446')
 
 build() {
   mkdir -p build
   cd build
   
-  cmake ../${pkgname}-${pkgver} \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/usr \
-    -DBUILD_SHARED_LIBS=ON 
-  make
+  meson ../${pkgname}-${pkgver} \
+    --prefix=/usr \
+    --buildtype=release \
+    --libexecdir=/usr/lib \
+    --default-library=shared
+  ninja
 }
 
 package() {
   cd build
-  make DESTDIR=${pkgdir} install
+  DESTDIR=${pkgdir} ninja install
   
   cd ../${pkgname}-${pkgver}
   install -Dm644 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE

@@ -1,0 +1,31 @@
+
+pkgname=kaidan
+pkgver=0.6.0
+_pkgver=0.6.0
+pkgrel=1
+arch=('x86_64')
+url='https://www.kaidan.im/'
+pkgdesc="Simple, user-friendly Jabber/XMPP client providing a modern user-interface using Kirigami and QtQuick. "
+license=('LGPL2.1')
+depends=('qt5-declarative' 'qxmpp' 'kirigami' 'knotifications' 'qt5-quickcontrols2' 'zxing-cpp')
+makedepends=('extra-cmake-modules' 'qt5-tools')
+source=("https://download.kde.org/unstable/kaidan/${_pkgver}/${pkgname}-${_pkgver}.tar.xz") 
+sha256sums=('7b9008b9fcb5ff2de47ac40eaf64c97a5652e756f0eb32306f6ad1320ce52ee7')
+
+build() {
+  mkdir -p build
+  cd build
+  
+  cmake ../${pkgname}-${_pkgver} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DI18N=ON
+  make
+}
+
+package() {
+  cd build
+  
+  make DESTDIR=${pkgdir} install
+}

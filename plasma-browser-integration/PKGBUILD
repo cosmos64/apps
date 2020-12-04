@@ -1,0 +1,34 @@
+
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
+pkgname=plasma-browser-integration
+pkgver=${_plasmaver}
+pkgrel=1
+arch=('x86_64')
+pkgdesc="Plasma5 browser integration"
+url="https://github.com/KDE/plasma-browser-integration"
+license=('GPL')
+depends=('kio' 'ki18n' 'knotifications' 'krunner' 'kwindowsystem' 'kactivities' 'purpose' 'kfilemetadata')
+makedepends=('extra-cmake-modules' 'kdoctools')
+source=("https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz")
+md5sums=(`grep ${pkgname}-${_plasmaver}.tar.xz ../kf5.md5 | cut -d" " -f1`)
+
+build() {
+  mkdir -p build
+  cd build
+  
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DINSTALL_CHROME_MANIFEST=ON
+    
+  make
+}
+
+package() {
+  cd build
+  
+  make DESTDIR=${pkgdir} install
+}

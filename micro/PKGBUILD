@@ -1,6 +1,6 @@
 # install go before building
 pkgname=micro
-pkgver=1.1.2
+pkgver=2.0.8
 pkgrel=1
 _commit=c409f1cc07f5c0e4b6e9766ab9bb10f1ebd92015
 pkgdesc='Terminal-based text editor that aims to be easy to use and intuitive, with full capabilities of modern terminals.'
@@ -9,28 +9,34 @@ arch=('x86_64')
 license=('MIT')
 depends=('xclip')
 makedepends=('go')
-source=("https://github.com/zyedidia/micro/archive/v${pkgver}.tar.gz")
-md5sums=('ad2dccc0ea840231e2bcd2ef288125c4')
+#source=("https://github.com/zyedidia/micro/releases/download/v${pkgver}/micro-${pkgver}-src.tar.gz")
+source=("https://github.com/zyedidia/micro/releases/download/v${pkgver}/micro-${pkgver}-linux64.tar.gz")
+md5sums=('1779f35a9defeaa5fb52d6cd7fe2bf60')
 
-build() {
-  cd ${pkgname}-${pkgver}
-  sed -i 's|$(shell go run tools/build-version.go)|$(shell git describe --tags --abbrev=0)|' Makefile
-  export GOPATH=`pwd`
-
-  # run makefile commands, runtime:
-  go get -u github.com/jteeuwen/go-bindata/...
-  $GOPATH/bin/go-bindata -nometadata -o runtime.go runtime/...
-  # tcell:
-  go get -d ./cmd/micro
-  git -C $GOPATH/src/github.com/zyedidia/tcell pull
+#build() {
+#  cd ${pkgname}
+  #sed -i 's|$(shell go run tools/build-version.go)|$(shell git describe --tags --abbrev=0)|' Makefile
   
-  make build
-}
+#  mkdir -p src/github.com/zyedidia/micro/cmd/micro/
+#  mkdir -p src/github.com/zyedidia/micro/tools/semver/
+#  cp -r cmd/micro/vendor/github.com src
+#  cp -r cmd/micro/vendor/golang.org src
+#  cp -r cmd/micro/vendor/gopkg.in src
+#  cp -r cmd/micro/vendor/layeh.com src
+#  cp -r cmd/micro/highlight src/github.com/zyedidia/micro/cmd/micro/
+#  cp -r tools/semver src/github.com/zyedidia/micro/tools/
+  
+#  export GOPATH=`pwd`
+#  export GOBIN="$GOPATH/bin"
+  
+#  make runtime
+#  make build
+#}
 
 package() {
   cd ${pkgname}-${pkgver}
   
   #make DESTDIR=${pkgdir} install
-  install -Dm755 micro $pkgdir/usr/bin/micro
+  install -Dm755 micro ${pkgdir}/usr/bin/micro
   install -Dm644 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
 }

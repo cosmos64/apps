@@ -9,23 +9,26 @@ pkgrel=1
 pkgdesc="KDE Plasma Addons"
 url="http://www.kde.org/"
 license=('GPL' 'LGPL' 'FDL')
-depends=('kactivities' 'kconfig' 'kconfigwidgets' 'kcoreaddons' 'ki18n' 'kio' 'kcmutils' 'plasma-framework' 
-         'krunner' 'kservice' 'kunitconversion' 'kdelibs4support' 'knewstuff' 'kross' 
+depends=('karchive' 'kconfig' 'kcoreaddons' 'kdeclarative' 'kholidays' 'ki18n' 'kiconthemes' 'kio' 'kcmutils'  'kross'
+         'knotifications' 'plasma-framework' 'krunner' 'kservice' 'sonnet' 'kunitconversion' 'kwindowsystem' 'knewstuff'
          'plasma-workspace' 'phonon-qt5' 'qca-qt5' 'purpose')
 makedepends=('extra-cmake-modules' 'kdoctools')
-groups=('plasma5')
-#source=("http://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz"
-source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz"
+groups=('kdeplasma5')
+source=("https://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz"
+#source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz"
         'notes.diff'
-        'metadata.desktop')
-md5sums=(`grep ${pkgname}-${_plasmaver}.tar.gz ../kf5.md5 | cut -d" " -f1`
-         '4cb9dce7d4cc863ecc4793385ac083d8'
-         '80d8ea43dfb1e34accc407cc72c0395b')
+        'metadata.desktop'
+        "https://invent.kde.org/plasma/kdeplasma-addons/commit/a50d30b14b204306e962c77a062a142f68bed1e5.diff")
+md5sums=(`grep ${pkgname}-${_plasmaver}.tar.xz ../kf5.md5 | cut -d" " -f1`
+         '2e3986b2d4f6680280fb7b0c57a31cc2'
+         '80d8ea43dfb1e34accc407cc72c0395b'
+         '48c80cd6400d77c2ab570002d5d55bc5')
 
 prepare() {
-  cd ${pkgname}-${__pkgver}
+  cd ${pkgname}-${pkgver}
   
   patch -p1 -i ${srcdir}/notes.diff
+  #patch -p1 -i ${srcdir}/a50d30b14b204306e962c77a062a142f68bed1e5.diff
   
   #cp ${srcdir}/metadata.desktop applets/activitypager/
 }
@@ -34,13 +37,13 @@ build() {
   mkdir -p build
   cd build
   
-  cmake ../${pkgname}-${__pkgver} \
+  cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DKDE_INSTALL_LIBDIR=lib \
     -DKDE_INSTALL_SYSCONFDIR=/etc \
     -DKDE_INSTALL_QMLDIR=/usr/lib/qt5/qml \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
     -DBUILD_TESTING=OFF 
   make

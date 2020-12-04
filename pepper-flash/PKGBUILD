@@ -1,27 +1,26 @@
 
 pkgname=pepper-flash
 _licensefile='PlatformClients_PC_WWEULA-en_US-20150407_1357.pdf'
-pkgver=23.0.0.205
+pkgver=32.0.0.453
 pkgrel=1
 pkgdesc='Adobe Flash Player - Chromium based browsers version'
 url='https://get.adobe.com/flashplayer/?no_redirect'
 arch=('x86_64')
+license=('custom')
 depends=('pulseaudio')
 optdepends=('freshplayerplugin: required for flash support in Firefox')
 provides=('flashplugin')
 replaces=('flashplugin')
 conflicts=('flashplugin')
 install=$pkgname.install
-license=('custom')
+groups=('network-web' 'multimedia')
 options=(!strip)
-source=("https://fpdownload.adobe.com/pub/flashplayer/pdc/${pkgver}/flash_player_ppapi_linux.x86_64.tar.gz"
-        "https://wwwimages2.adobe.com/www.adobe.com/content/dam/Adobe/en/legal/licenses-terms/pdf/${_licensefile}")
-md5sums=('1ed9c0d030bb6e167acfb0d0e2a08d8a'
-         '519cae27f11d267b31084c1eee5fb6b0')
+source=("https://fpdownload.adobe.com/pub/flashplayer/pdc/${pkgver}/flash_player_ppapi_linux.x86_64.tar.gz")
+md5sums=('d9c92e77e20299e72e35c0c66e2173c8')
 
 package () {
     install -Dm644 manifest.json ${pkgdir}/usr/lib/PepperFlash/manifest.json
     install -Dm755 libpepflashplayer.so ${pkgdir}/usr/lib/PepperFlash/libpepflashplayer.so
     
-    install -Dm644 ${_licensefile} ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.pdf
+    install -Dm644 license.pdf ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE.pdf
 }

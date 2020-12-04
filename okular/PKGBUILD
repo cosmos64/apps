@@ -4,37 +4,36 @@ source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=okular
 arch=('x86_64')
-#pkgver=${_kdever}
-pkgver=16.07.75
-_commit=3c8464a4a0f7e104dd4318314393a630404320e0
+pkgver=${_kdever}
 pkgrel=1
 pkgdesc="KDE document viewer"
 url="http://www.kde.org"
 license=('GPL' 'LGPL' 'FDL')
-#options=('docs')
-groups=('office')
-depends=('kactivities' 'karchive' 'kbookmarks' 'kcompletion' 'kconfig' 'kconfigwidgets' 'kcoreaddons' 'kdbusaddons'
-         'kjs' 'kio' 'khtml' 'kparts' 'kpty' 'threadweaver' 'kiconthemes' 'kwallet' 'kwindowsystem'
-         'phonon-qt5' 'libxxf86vm' 'sane' 'lcms' 'poppler-qt5' 'chmlib' 'djvulibre' 'libspectre' 'ebook-tools'
-         'json-c' 'qimageblitz-qt5' 'libkexiv2' 'libkdcraw') # 'qtspeech')
+depends=('kactivities' 'karchive' 'kbookmarks' 'kcompletion' 'kconfig' 'kconfigwidgets' 'kcoreaddons'
+         'kjs' 'kio' 'khtml' 'kparts' 'kpty' 'threadweaver' 'kiconthemes' 'kwallet' 'kwindowsystem' 'kcrash'
+         'phonon-qt5' 'libxxf86vm' 'sane' 'poppler-qt5' 'chmlib' 'djvulibre' 'libspectre' 'ebook-tools'
+         'json-c' 'libkexiv2' 'libkdcraw' 'kdegraphics-mobipocket' 'qt5-speech' 'discount' 'purpose')
 makedepends=('pkg-config' 'extra-cmake-modules' 'kdoctools' 'qca-qt5')
 conflicts=('kdegraphics-okular')
 replaces=('kdegraphics-okular')
-#source=("$_mirror/${_pkgname}-$_kdever.tar.xz")
-#md5sums=(`grep ${_pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
-source=("https://github.com/KDE/okular/archive/${_commit}.zip")
-md5sums=('98e69946fe5cffd4d0906ca6925ca6a9')
+groups=('office')
+source=("$_mirror/${pkgname}-${_kdever}.tar.xz"
+        "https://invent.kde.org/kde/okular/-/commit/6a93a033b4f9248b3cd4d04689b8391df754e244.diff")
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`
+         'e916c0bc23f5ba5be0a5394838f2de3e')
 
 prepare() {
-  cd $pkgname-${_commit}
-  #patch -p1 -i $srcdir/warning.diff
+  cd ${pkgname}-${pkgver}
+  # CVE-2020-9359
+  #patch -p1 -i ${srcdir}/6a93a033b4f9248b3cd4d04689b8391df754e244.diff
+  #sed -i -e 's|ecm_setup_version(0.99.|ecm_setup_version(1.0.|' CMakeLists.txt
 }
 
 build() {
   mkdir -p build
   cd build
   
-  cmake ../${pkgname}-${_commit} \
+  cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DKDE_INSTALL_LIBDIR=lib \
@@ -49,6 +48,7 @@ package() {
   cd build
 
   make DESTDIR=${pkgdir} install
-  # fix non-working menu item in lost & found
+  # fix non-working menu/mobile only items in lost & found
   echo "NoDisplay=true" >> ${pkgdir}/usr/share/applications/org.kde.mobile.okular.desktop
+  echo "NoDisplay=true" >> ${pkgdir}/usr/share/applications/org.kde.okular.kirigami.desktop
 }

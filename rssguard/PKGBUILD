@@ -1,6 +1,6 @@
 
 pkgname=rssguard
-pkgver=3.3.5
+pkgver=3.8.3
 pkgrel=1
 pkgdesc="Simple (yet powerful) feed reader, able to fetch the most known feed formats, including RSS/RDF and ATOM."
 arch=('x86_64')
@@ -8,17 +8,25 @@ url="https://github.com/martinrotter/rssguard"
 license=('GPL')
 depends=('qtwebengine')
 makedepends=('qt5-tools')
-source=("https://github.com/martinrotter/rssguard/archive/${pkgver}.tar.gz")
-md5sums=('9ac44a786afe7b9c5a94e1a81120ada8')
+source=("https://github.com/martinrotter/rssguard/archive/${pkgver}.tar.gz"
+        "https://github.com/martinrotter/rssguard/commit/139e014d2af6a6e156098ba486dbbe2681018fab.diff")
+md5sums=('648751262bc56d421094a98f87c03901'
+         '8d6381cb63a44af1108f925f4b71ba8d')
+
+prepare() {
+  cd ${pkgname}-${pkgver}
+
+  #patch -p1 -i ${srcdir}/139e014d2af6a6e156098ba486dbbe2681018fab.diff
+}
 
 build() {
   mkdir -p build
   cd build
 
-  /usr/lib/qt5/bin/qmake ../${pkgname}-${pkgver}/rssguard.pro -r \
+  /usr/lib/qt5/bin/qmake ../${pkgname}-${pkgver}/build.pro -r \
     CONFIG+=release PREFIX=/usr \
     INSTALL_ROOT=${pkgdir}/ \
-    LRELEASE_EXECUTABLE=/usr/lib/qt5/bin/lrelease
+    USE_WEBENGINE=true
   make
 }
 

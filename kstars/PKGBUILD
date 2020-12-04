@@ -1,44 +1,37 @@
 
-# include global config
-source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
-
 pkgname=kstars
-pkgver=${_kdever}
+pkgver=3.5.0
+epoch=1
 pkgrel=1
-pkgdesc="Desktop Planetarium"
-url="http://kde.org/applications/education/kstars/"
+pkgdesc="Open source, cross-platform Astronomy Software by KDE"
+url="https://edu.kde.org/kstars/"
 arch=('x86_64')
-url='http://www.kde.org'
 license=('GPL' 'LGPL' 'FDL')
-depends=('kconfig' 'kwidgetsaddons' 'kguiaddons' 'knewstuff' 'kdbusaddons' 'ki18n' 'ktexteditor' 
-         'kxmlgui' 'kwindowsystem' 'kinit' 'kdeclarative' 'kplotting' 'kjobwidgets' 'kio' 'kiconthemes'
-         'cfitsio' 'wcslib' 'xplanet' 'qt5-multimedia' 'libindi')
+depends=('kauth' 'kconfig' 'kcrash' 'kwidgetsaddons' 'knewstuff' 'kio' 'ki18n' 'kxmlgui' 'kplotting' 
+         'knotifications' 'knotifyconfig' 'cfitsio' 'wcslib' 'xplanet' 'qt5-multimedia' 'libindi' 
+         'libraw' 'qt5-websockets' 'qtkeychain' 'gsl' 'qt5-datavis3d' 'stellarsolver')
 makedepends=('extra-cmake-modules' 'kdoctools' 'eigen3')
-conflicts=('kdeedu-kstars')
-replaces=('kdeedu-kstars')
-groups=('kde' 'kdeedu' 'kde-uninstall' 'education')
-source=("$_mirror/${pkgname}-$_kdever.tar.xz"
-        'isnan.diff')
-md5sums=(`grep ${pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`
-         '132dfb3da1d339b9990d55aae0fa148e')
+groups=('kde' 'kde-edu' 'kde-uninstall' 'education')
+source=("https://download.kde.org/stable/kstars/${pkgname}-${pkgver}.tar.xz")
+sha256sums=('a1aa6e859b90bedcf88664c13e0cdfef6407aca1ee6eef608310d8a5caa9f33a')
 
 prepare() {
-  cd ${srcdir}/${pkgname}-${pkgver} 
+  cd ${pkgname}-${pkgver} 
   #sed -i -e 's|add_subdirectory(doc)|#add_subdirectory(doc)|' ${srcdir}/${pkgname}/CMakeLists.txt
   #patch -p1 -i $srcdir/isnan.diff 
 }
 
 build() {
- mkdir -p build
+  mkdir -p build
   cd build
 
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_INSTALL_DIR=lib \
-    -DSYSCONF_INSTALL_DIR=/etc \
-    -DQML_INSTALL_DIR=/usr/lib/qt5/qml \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
+    -DKDE_INSTALL_QMLDIR=/usr/lib/qt5/qml \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DBUILD_TESTING=OFF 
   make
 }

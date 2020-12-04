@@ -1,17 +1,15 @@
  
 pkgname=xterm
-pkgver=327
+pkgver=362
 pkgrel=1
 pkgdesc="X Terminal Emulator"
 arch=('x86_64')
-url="http://invisible-island.net/xterm/"
+url="https://invisible-island.net/xterm/"
 license=('custom')
 depends=('libxft' 'libxaw' 'ncurses' 'xorg-apps' 'xbitmaps' 'libutempter')
 groups=('system')
-source=("ftp://invisible-island.net/xterm/${pkgname}-${pkgver}.tgz"
-        'LICENSE')
-md5sums=('3c32e931adcad44e64e57892e75d9e02'
-         '10ecc3f8ee91e3189863a172f68282d2')
+source=("ftp://ftp.invisible-island.net/xterm/${pkgname}-${pkgver}.tgz")
+md5sums=('ee6710bbbe18000236c6e6d7b55b54d5')
 
 build() {
   cd ${pkgname}-${pkgver}
@@ -51,7 +49,7 @@ package() {
   chmod 0755 ${pkgdir}/usr/bin/xterm
 
   install -m755 -d ${pkgdir}/usr/share/licenses/${pkgname}
-  install -m644 ${srcdir}/LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/
+  install -m644 COPYING ${pkgdir}/usr/share/licenses/${pkgname}/
   install -m755 -d ${pkgdir}/usr/share/applications
   install -m644 ${srcdir}/${pkgname}-${pkgver}/{xterm,uxterm}.desktop ${pkgdir}/usr/share/applications/
 }

@@ -9,9 +9,10 @@ pkgdesc="Simple system settings module to manage the users of your system"
 arch=('x86_64')
 url="https://projects.kde.org/projects/kde/workspace/user-manager"
 license=('LGPL')
-depends=('kdelibs4support' 'libpwquality')
+depends=('kwidgetsaddons' 'kcoreaddons' 'ki18n' 'kconfig' 'kconfigwidgets'
+         'kcmutils' 'kio' 'kiconthemes' 'kauth' 'libpwquality')
 makedepends=('extra-cmake-modules' 'kdoctools')
-#groups=('plasma5')
+#groups=('kdeplasma5')
 #source=("http://download.kde.org/stable/plasma/${pkgver}/${pkgname}-${pkgver}.tar.xz")
 source=("${pkgname}-${pkgver}.tar.gz::https://github.com/KDE/${pkgname}/archive/${_branch}.tar.gz")
 md5sums=(`grep ${pkgname}-${_plasmaver}.tar.gz ../kf5.md5 | cut -d" " -f1`)

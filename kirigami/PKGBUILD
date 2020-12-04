@@ -1,27 +1,39 @@
+
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
  
 pkgname=kirigami
-pkgver=1.1.0
-pkgrel=1
+pkgver=${_kf5ver}
+pkgrel=2
 pkgdesc='Set of QtQuick components at the moment targeted for mobile use (in the future desktop as well)'
 arch=('x86_64')
 url='https://github.com/KDE/kirigami'
 license=('LGPL')
-depends=('plasma-framework' 'purpose')
+depends=('qt5-svg' 'qt5-quickcontrols2' 'qt5-graphicaleffects')
 makedepends=('extra-cmake-modules' 'qt5-tools')
-source=("http://download.kde.org/stable/kirigami/${pkgname}-${pkgver}.tar.xz")
-md5sums=('04491f0180ba69cea095e9ed61f76c9f')
+source=("https://download.kde.org/stable/frameworks/5.64/${pkgname}2-${pkgver}.tar.xz"
+        "https://github.com/KDE/kirigami/commit/4a9820a6df15a55a7d36d343ce70a25ba7d56b79.diff")
+md5sums=(`grep ${pkgname}2-${_kf5ver}.tar.xz ../kf5.md5 | cut -d" " -f1`
+         '3f50e73602847534a5d475b8251f0269')
+
+prepare() {
+  cd ${pkgname}2-${pkgver}
+
+  #patch -p1 -i ${srcdir}/4a9820a6df15a55a7d36d343ce70a25ba7d56b79.diff
+}
 
 build() {
   mkdir -p build
   cd build
   
-  cmake ../${pkgname}-${pkgver} \
+  cmake ../${pkgname}2-${pkgver} \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_BUILD_TYPE=Release \
     -DKDE_INSTALL_LIBDIR=lib \
     -DKDE_INSTALL_LIBEXECDIR=lib \
     -DKDE_INSTALL_SYSCONFDIR=/etc \
-    -DBUILD_TESTING=OFF
+    -DBUILD_TESTING=OFF \
+    -DBUILD_EXAMPLES=ON
     
   make
 }

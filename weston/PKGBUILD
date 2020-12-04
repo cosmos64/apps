@@ -1,35 +1,39 @@
 
 pkgname=weston
-pkgver=1.12.0
-pkgrel=1
+pkgver=9.0.0
+pkgrel=2
 pkgdesc='Reference implementation of a Wayland compositor'
 arch=('x86_64')
-url='http://wayland.freedesktop.org'
+url='https://wayland.freedesktop.org'
 license=('MIT')
 options=('!libtool')
 depends=('libxkbcommon' 'mesa' 'pango' 'poppler-glib' 'mtdev' 'libxcursor' 'glu' 'libunwind'
-         'pixman' 'xkeyboard-config' 'colord' 'libwebp' 'libva' 'libinput' 'wayland-protocols')
-replaces=('weston-git')
-provides=('weston-git')
-conflicts=('weston-git')
-source=("http://wayland.freedesktop.org/releases/${pkgname}-${pkgver}.tar.xz")
-md5sums=('310af6d7f8ba03c3418cec8ad72ea748')
+         'pixman' 'xkeyboard-config' 'colord' 'libwebp' 'libva' 'libinput' 'wayland-protocols'
+         'freerdp') # 'pipewire')
+makedepends=('meson' 'ninja')
+source=("https://wayland.freedesktop.org/releases/${pkgname}-${pkgver}.tar.xz")
+sha256sums=('5cf5d6ce192e0eb15c1fc861a436bf21b5bb3b91dbdabbdebe83e1f83aa098fe')
 
 build() {
-   cd ${pkgname}-${pkgver}
-
-   ./configure \
-       --prefix=/usr \
-       --libexecdir=/usr/lib/weston \
-       --enable-demo-clients-install \
-       --with-cairo=gl \
-       --enable-systemd-notify
-   make
+  mkdir -p build
+  cd build
+  
+  meson ../${pkgname}-${pkgver} \
+    --prefix=/usr \
+    --sysconfdir=/etc \
+    --buildtype=release \
+    --libexec=lib/weston \
+    -Ddemo-clients=true \
+    -Dsimple-clients=all \
+    -Dbackend-rdp=true \
+    -Dpipewire=false
+    
+   ninja
 }
 
 package() {
-   cd ${pkgname}-${pkgver}
-   make DESTDIR="${pkgdir}" install
+  cd build  
+  DESTDIR=${pkgdir} ninja install
 
-   install -Dm644 COPYING "$pkgdir/usr/share/licenses/${pkgname}/COPYING"
+  install -Dm644 ../${pkgname}-${pkgver}/COPYING ${pkgdir}/usr/share/licenses/${pkgname}/COPYING
 }

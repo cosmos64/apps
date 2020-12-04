@@ -9,20 +9,21 @@ pkgdesc="Common lib for kdepim."
 arch=('x86_64')
 url='https://github.com/KDE/pimcommon'
 license=('LGPL')
-depends=('akonadi-contacts' 'ki18n' 'kmime' 'kimap' 'kcontacts' 'kcodecs' 'kwallet' 'kdbusaddons'
-         'kxmlgui' 'kconfig' 'sonnet' 'karchive' 'knewstuff' 'kdelibs4support' 'ktextwidgets'
-         'libkdepim' 'kpimtextedit' 'grantlee' 'qt5-webkit')
+depends=('karchive' 'kcodecs' 'kcompletion' 'kconfig' 'kconfigwidgets' 'kcoreaddons' 'kdbusaddons' 'ki18n'
+         'kiconthemes' 'kitemmodels' 'kjobwidgets' 'kio' 'knewstuff' 'kservice' 'kwidgetsaddons' 'kxmlgui'
+         'purpose' 'kdesignerplugin'
+         'akonadi-contacts' 'kmime' 'kimap' 'kcontacts' 'kwallet'
+         'libkdepim' 'kpimtextedit' 'grantlee')
 makedepends=('extra-cmake-modules' 'kdoctools' 'qt5-tools' 'boost')
 groups=('kde' 'kdepim' 'kde-uninstall')
-source=("http://download.kde.org/stable/applications/${_kdever}/src/${pkgname}-${_kdever}.tar.xz")
+source=("https://download.kde.org/stable/applications/${_kdever}/src/${pkgname}-${_kdever}.tar.xz")
 md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
-#source=("git://anongit.kde.org/pimcommon.git")
-#md5sums=('SKIP')
 
-#prepare() {
-#  cd $pkgname-${pkgver}
+prepare() {
+  cd $pkgname-${pkgver}
   #patch -p1 -i $srcdir/qt55.diff
-#}
+  sed -i -e 's|setRecursiveFiltering(true)|setRecursiveFilteringEnabled(true);|' src/pimcommonakonadi/folderdialog/checkedcollectionwidget.cpp
+}
 
 build() {
   mkdir build

@@ -1,36 +1,38 @@
 
 pkgname=wireshark
-pkgver=2.2.1
+pkgver=3.4.0
 pkgrel=1
 pkgdesc='Network packet analyzer that will try to capture network packets and tries to display that packet data as detailed as possible'
 arch=('x86_64')
-url='http://www.wireshark.org/'
+url='https://www.wireshark.org/'
 license=('GPL2')
 depends=('krb5' 'libgcrypt' 'libcap' 'libpcap' 'bash' 'geoip' 'gnutls' 'glib2' 'lua' 'qt5-multimedia'
-         'qt5-svg' 'asciidoc' 'portaudio-svn' 'c-ares' 'libssh')
-makedepends=('cmake' 'python2' 'qt5-tools')
-source=("http://www.wireshark.org/download/src/${pkgname}-${pkgver}.tar.bz2"
-        'version.h.in')
-md5sums=('49a1023a69ac108ca089d750eee50e37'
-         '45fa502b3b361dd8d3985101c44cee26')
+         'qt5-svg' 'portaudio' 'c-ares' 'libssh')
+makedepends=('cmake' 'python3' 'qt5-tools' 'asciidoc')
+source=("https://www.wireshark.org/download/src/${pkgname}-${pkgver}.tar.xz"
+        'udpdump.diff'
+        'udpdump.pod')
+sha256sums=('67e4ebbd9153fc589fd67dc21b93176674c73adc3d5a43934c3ac69d8594a8ae'
+            '0226c807a7590f14ae17a487665353f90f2f9fe3901b095bdd06c978fc8425a2'
+            '4f2a6f7c0f39793c9bf14db5563fc284275a342677aeaef02d91a3980a5c37d1')
 
 prepare() {
   cd ${pkgname}-${pkgver}
 
-  #cp ${srcdir}/version.h.in ${srcdir}/${pkgname}-${pkgver}/version.h.in
+  # https://bugs.wireshark.org/bugzilla/show_bug.cgi?id=13903
+  #cp ${srcdir}/udpdump.pod ${srcdir}/${pkgname}-${pkgver}/doc/udpdump.pod
+  #patch -p1 -i ${srcdir}/udpdump.diff
 }
 
 build() {
-  cd ${srcdir}
-  
   mkdir -p build
   cd build
 
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DENABLE_QT5=ON \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins 
+    -DCMAKE_INSTALL_LIBDIR=/usr/lib \
+    -DDISABLE_WERROR=yes
   make
 }
 

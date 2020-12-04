@@ -10,20 +10,15 @@ arch=('x86_64')
 url='https://projects.kde.org/projects/kde/pim/kpimtextedit'
 license=('LGPL')
 depends=('kcoreaddons' 'kemoticons' 'sonnet' 'ktextwidgets' 'kio' 'kcodecs' 'kiconthemes' 'kconfigwidgets'
-         'kxmlgui' 'kdesignerplugin' 'grantlee') #'qtspeech"
+         'kxmlgui' 'kdesignerplugin' 'syntax-highlighting' 'grantlee') #'qtspeech"
 makedepends=('extra-cmake-modules' 'kdoctools' 'qt5-tools')
 source=($_mirror/${pkgname}-${_kdever}.tar.xz)
 md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
 #source=("git://anongit.kde.org/kpimtextedit.git")
 #md5sums=('SKIP')
 
-prepare() {
-  cd $pkgname-${pkgver}
-  #sed -i -e 's/${DATA_INSTALL_DIR}/${KXMLGUI_INSTALL_DIR}/' ${srcdir}/${pkgname}/src/CMakeLists.txt
-}
-
 build() {
-  mkdir build
+  mkdir -p build
   
   cd build 
   cmake ../${pkgname}-${pkgver} \

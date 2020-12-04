@@ -7,25 +7,25 @@ pkgver=${_kdever}
 pkgrel=1
 pkgdesc="KDE's terminal emulator"
 arch=('x86_64')
-url='https://projects.kde.org/projects/kde/applications/konsole'
+url='https://github.com/KDE/konsole'
 license=('LGPL')
 depends=('kbookmarks' 'kcompletion' 'kconfig' 'kconfigwidgets' 'kcoreaddons'
          'kguiaddons' 'kdbusaddons' 'ki18n' 'kiconthemes' 'kinit' 'kio'
          'knotifications' 'knotifyconfig' 'kparts' 'kpty' 'kservice' 
-         'ktextwidgets' 'kwidgetsaddons' 'kwindowsystem' 'kxmlgui')
+         'ktextwidgets' 'kwidgetsaddons' 'kwindowsystem' 'kxmlgui' 'knewstuff')
 makedepends=('extra-cmake-modules' 'kdoctools')
 conflicts=('kde-baseapps-konsole')
 replaces=('kde-baseapps-konsole')
 provides=('kde-baseapps-konsole')
 source=("$_mirror/${pkgname}-${pkgver}.tar.xz"
-        "https://github.com/KDE/konsole/commit/fca305ebffd331701b59e68ab446db9618987b6f.diff")
+        "https://invent.kde.org/utilities/konsole/-/commit/e7e8e9d1a9b129d73a4c502af873fb01fb2795fb.diff")
 md5sums=(`grep ${pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`
-         'ea66d8c3881bf12a8bbcba77da977996')
+         '8c12fccd299ec325a719e4bfc46add48')
 
 prepare() {
   cd ${pkgname}-${pkgver}
-  # fix transparency
-  #patch -p1 -i ${srcdir}/fca305ebffd331701b59e68ab446db9618987b6f.diff
+  # Qt 5.15 needed
+  #patch -p1 -i ${srcdir}/e7e8e9d1a9b129d73a4c502af873fb01fb2795fb.diff
 }
          
 build() {
@@ -35,9 +35,9 @@ build() {
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DSYSCONF_INSTALL_DIR=/etc \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
-    -DLIB_INSTALL_DIR=lib
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_LIBDIR=lib
   make
 }
 

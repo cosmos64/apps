@@ -1,0 +1,36 @@
+
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
+pkgname=svgpart
+pkgver=${_kdever}
+pkgrel=1
+pkgdesc="A KPart for viewing SVGs"
+arch=('x86_64')
+url='https://github.com/KDE/svgpart'
+license=('GPL' 'LGPL' 'FDL')
+depends=('kcoreaddons' 'kparts' 'qt5-svg')
+makedepends=('extra-cmake-modules' 'kdoctools')
+groups=('kde-graphics')
+source=("$_mirror/${pkgname}-${_kdever}.tar.xz")
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
+
+
+build() {
+  mkdir -p build
+  cd build
+
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_USE_QT_SYS_PATHS=ON
+  make
+}
+
+package() {
+  cd build
+
+  make DESTDIR=${pkgdir} install
+}

@@ -1,0 +1,28 @@
+
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
+pkgname=markdownpart
+pkgver=${_kdever}
+pkgrel=1
+pkgdesc="Markdown viewer KParts plugin, which allows KParts-using applications to display files in Markdown format in the target format"
+arch=('x86_64')
+url="https://invent.kde.org/utilities/markdownpart"
+license=('LGPL2.1+')
+depends=('ki18n' 'kparts')
+makedepends=('extra-cmake-modules')
+source=($_mirror/${pkgname}-${_kdever}.tar.xz)
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
+
+build() {
+  cmake -B build -S ${pkgname}-${pkgver} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_SHARED_LIBS=ON
+  cmake --build build
+}
+
+package() {
+
+  DESTDIR=${pkgdir} cmake --install build
+}

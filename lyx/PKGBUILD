@@ -1,41 +1,45 @@
 
 pkgname=lyx
-pkgver=2.2.2
-_pkgver=2.2.2
+pkgver=2.3.6
+_pkgver=2.3
+__pkgver=2.3.6
 pkgrel=1
 pkgdesc="An advanced open-source document processor."
 arch=('x86_64')
-url="http://www.lyx.org"
-depends=('qt5-base' 'qt5-svg' 'qt5-x11extras' 'texlive-core' 'python2' 'perl' 'imagemagick' # 'enchant' 
-         'boost-libs' 'icu' 'libmythes' 'libxtst' 'aspell') # 'hunspell' 
+url="https://www.lyx.org"
+depends=('qt5-base' 'qt5-svg' 'qt5-x11extras' 'texlive-core' 'python3' 'perl' 'imagemagick' 
+         'boost-libs' 'icu' 'libmythes' 'libxtst' 'aspell' 'hunspell') # 'enchant' 
 makedepends=('boost' 'bc' 'cmake' 'qt5-tools')
 groups=('office')
 license=('GPL')
-source=("ftp://ftp.lyx.org/pub/lyx/stable/2.2.x/$pkgname-$pkgver.tar.xz" 
+source=("https://ftp.lip6.fr/pub/lyx/stable/${_pkgver}.x/${pkgname}-${pkgver}.tar.xz" 
 #source=("ftp://ftp.lyx.org/pub/lyx/devel/lyx-2.2/lyx-${_pkgver}/lyx-${_pkgver}.tar.xz"
-        'lyx.desktop')
-md5sums=('c37b2926d7df211c94b7260e163e2c29'
-         '0ea910b9b881ebaa0f79ebaa618930fd')
+        'lyx.desktop'
+        'qt5.11.diff')
+md5sums=('6e0a1d274cc384cd4d07fe68d34c6aaa'
+         '0ea910b9b881ebaa0f79ebaa618930fd'
+         '6b356426b38480ed65a7efa6846ae2ec')
          
 prepare() {
-  cd ${pkgname}-${_pkgver}
-  
-  #sed -i 's|set(HUNSPELL_VERSION 1.3.3)|set(HUNSPELL_VERSION 1.4.1)|' 3rdparty/hunspell/CMakeLists.txt
+  cd ${pkgname}-${pkgver}
+
+  #patch -p1 -i ${srcdir}/qt5.11.diff
+  sed -i 's|hunspell-1.2|hunspell-1.7|' development/cmake/modules/FindHUNSPELL.cmake
 }
          
 build() {
   mkdir -p build
   cd build
   
-  cmake ../${pkgname}-${_pkgver} \
+  cmake ../${pkgname}-${pkgver} \
     -DLYX_RELEASE=ON \
     -DLYX_INSTALL_PREFIX=/usr \
-    -DLYX_DATA_SUBDIR=share/lyx2.2/ \
+    -DLYX_DATA_SUBDIR=share/lyx${_pkgver}/ \
     -DLYX_MAN_DIR=/usr/share/man/man1 \
     -DLYX_USE_QT=QT5 \
     -DLYX_ASPELL=ON \
     -DLYX_ENCHANT=OFF \
-    -DLYX_HUNSPELL=OFF \
+    -DLYX_HUNSPELL=ON \
     -DLYX_EXTERNAL_BOOST=ON \
     -DLYX_INSTALL=ON
     
@@ -47,8 +51,8 @@ package() {
   cd build
   make DESTDIR=${pkgdir} install
   
-  mv ${pkgdir}/usr/share/lyx2.2/locale ${pkgdir}/usr/share/locale
-  mv ${pkgdir}/usr/applications ${pkgdir}/usr/share/applications
-  mv ${pkgdir}/usr/icons ${pkgdir}/usr/share/icons
+  #mv ${pkgdir}/usr/share/lyx${_pkgver}/locale ${pkgdir}/usr/share/locale
+  #mv ${pkgdir}/usr/applications ${pkgdir}/usr/share/applications
+  #mv ${pkgdir}/usr/icons ${pkgdir}/usr/share/icons
 }
 

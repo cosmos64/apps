@@ -1,39 +1,47 @@
 
 pkgname=firefox
 pkgdesc='Standalone web browser from mozilla.org'
-url='http://www.mozilla.org/projects/firefox'
-pkgver=49.0.2
+url='https://www.mozilla.org/en-US/firefox/'
+pkgver=83.0
+_commit=6b51784853e47e091d213d421a19cb623af718f0
 pkgrel=1
 arch=('x86_64')
 license=('MPL' 'GPL' 'LGPL')
-groups=('network')
+groups=('network-web')
 #install=firefox.install
-depends=('desktop-file-utils' 'libxt' 'mime-types' 'nss' 'shared-mime-info' 'gtk2' 'networkmanager'
-         'gst-plugins-good' 'gst-plugins-bad' 'gst-libav' 'mozilla-common' 'startup-notification'
-         'dbus-glib' 'alsa-lib' 'hicolor-icon-theme' 'libvpx' 'icu' 'libevent' 'sqlite' 'hunspell'
-         'pulseaudio')
-makedepends=('unzip' 'zip' 'diffutils' 'python2' 'yasm' 'mesa' 'imake' 'xorg-server' 
-             'inetutils' 'gconf' 'autoconf2.13' 'rust')
-optdepends=('freshplayerplugin: full flash support in firefox')
+depends=('desktop-file-utils' 'libxt' 'mime-types' 'nss' 'shared-mime-info' 'gtk2' 'gtk3' 'networkmanager'
+         'gst-plugins-good' 'gst-plugins-bad' 'gst-libav' 'startup-notification'
+         'dbus-glib' 'alsa-lib' 'hicolor-icon-theme' 'libevent' 'pulseaudio' 'libjpeg-turbo') # 'icu')
+makedepends=('unzip' 'zip' 'diffutils' 'python3' 'python3-psutil' 'yasm' 'mesa' 'imake' 'xorg-server' 
+             'inetutils' 'autoconf2.13' 'rust' 'clang' 'nodejs' 'cbindgen' 'nasm' 'sqlite') # 'libvpx' 
+optdepends=('freshplayerplugin: full flash support in firefox'
+            'kde-gtk-config: gtk integration settings for Plasma')
 options=('!emptydirs' '!makeflags')
-source=("https://ftp.mozilla.org/pub/mozilla.org/firefox/releases/${pkgver}/source/firefox-${pkgver}.source.tar.xz"
+#source=("https://hg.mozilla.org/releases/mozilla-release/archive/${_commit}.tar.bz2"
+source=("https://ftp.mozilla.org/pub/firefox/releases/${pkgver}/source/${pkgname}-${pkgver}.source.tar.xz"
         'mozconfig'
         'firefox.desktop'
         'firefox-install-dir.patch'
-        'vendor.js')
-md5sums=('5afc916c83998aef07b1adae1db21cbc'
-         '62beb8e4eb0de0cd68b63c1f3be5d31c'
-         '174a2a286e32d5c9a48f51a18ffa4e6c'
-         'dbf14588e85812ee769bd735823a0146'
-         '0d053487907de4376d67d8f499c5502b')
+        'vendor.js'
+        'stylo.patch')
+sha256sums=('d69e84e8b8449f828683d274c24e03095858362bfed21b08bdd7fe715eea5398'
+            '1b2717b226fd5b436442993201584a75c2bc4fcaebca1b1a96595819685373e3'
+            '9f25db9a95d8fb29545e9864c69fae41b95a904e1580cf4b838e22fbdcbbdcc3'
+            'd86e41d87363656ee62e12543e2f5181aadcff448e406ef3218e91865ae775cd'
+            '858642c81833ccfd7ac89af2c159e8d8fca0b80e4fea2840afe64b0393bf9ed6'
+            '46104bf0afde6d7fb74630425915364a11b05f016f16e14ff0e666f322c9e940')
 
 prepare() {
   cd ${pkgname}-${pkgver}
+  # run prior to building:
+  export LC_ALL="en_US.UTF-8"
 
   cp ../mozconfig .mozconfig
-  patch -p1 -i ${srcdir}/firefox-install-dir.patch
+  #patch -p1 -i ${srcdir}/firefox-install-dir.patch
+  
+  #patch -p1 -i ${srcdir}/stylo.patch
 
-  mkdir ${srcdir}/path
+  mkdir -p ${srcdir}/path
   
   #sed -i '/ac_cpp=/s/$CPPFLAGS/& -O2/' configure
 }
@@ -42,14 +50,18 @@ build() {
   cd ${pkgname}-${pkgver}
 
   export PATH=${srcdir}/path:$PATH
+  export MACH_USE_SYSTEM_PYTHON=1
   unset CPPFLAGS
 
-  make -f client.mk build MOZ_PGO=0
+  #make -f client.mk build # MOZ_PGO=0
+  # https://developer.mozilla.org/en-US/docs/Mozilla/Developer_guide/mach
+  ./mach build
 }
 
 package() {
   cd ${pkgname}-${pkgver}
-  make -f client.mk DESTDIR=${pkgdir} INSTALL_SDK= install
+  #make -f client.mk DESTDIR=${pkgdir} INSTALL_SDK= install
+  DESTDIR=${pkgdir} ./mach install
 
   install -Dm644 ../vendor.js ${pkgdir}/usr/lib/firefox/browser/defaults/preferences/vendor.js
 
@@ -57,10 +69,10 @@ package() {
       install -Dm644 browser/branding/official/default$i.png \
         ${pkgdir}/usr/share/icons/hicolor/${i}x${i}/apps/firefox.png
   done
-  install -Dm644 browser/branding/official/content/icon64.png ${pkgdir}/usr/share/icons/hicolor/64x64/apps/firefox.png
-  install -Dm644 browser/branding/official/mozicon128.png ${pkgdir}/usr/share/icons/hicolor/128x128/apps/firefox.png
-  install -Dm644 browser/branding/official/content/about-logo.png ${pkgdir}/usr/share/icons/hicolor/192x192/apps/firefox.png
-  install -Dm644 browser/branding/official/content/about-logo@2x.png ${pkgdir}/usr/share/icons/hicolor/384x384/apps/firefox.png
+  #install -Dm644 browser/branding/official/content/icon64.png ${pkgdir}/usr/share/icons/hicolor/64x64/apps/firefox.png
+  #install -Dm644 browser/branding/official/mozicon128.png ${pkgdir}/usr/share/icons/hicolor/128x128/apps/firefox.png
+  #install -Dm644 browser/branding/official/content/about-logo.png ${pkgdir}/usr/share/icons/hicolor/192x192/apps/firefox.png
+  #install -Dm644 browser/branding/official/content/about-logo@2x.png ${pkgdir}/usr/share/icons/hicolor/384x384/apps/firefox.png
 
   install -Dm644 ../firefox.desktop ${pkgdir}/usr/share/applications/firefox.desktop
 

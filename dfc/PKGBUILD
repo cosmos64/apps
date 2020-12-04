@@ -1,16 +1,17 @@
 
 pkgname=dfc
-pkgver=3.0.5
+pkgver=3.1.1
 pkgrel=2
 pkgdesc="Display file system space usage using graphs and colors"
 arch=('x86_64')
-url="http://projects.gw-computing.net/projects/dfc"
+url="https://projects.gw-computing.net/projects/dfc"
 license=('BSD')
 depends=('glibc')
 makedepends=('cmake' 'gettext')
-source=("http://projects.gw-computing.net/attachments/download/467/${pkgname}-${pkgver}.tar.gz")
+source=("https://projects.gw-computing.net/attachments/download/615/${pkgname}-${pkgver}.tar.gz")
 install='dfc.install'
-md5sums=('3e6443c54966751f5e9fdaca33d873d1')
+md5sums=('26fd905a07078332d98c2806cdd0fc0e')
+groups=('color')
 
 build() {
   cd ${pkgname}-${pkgver}

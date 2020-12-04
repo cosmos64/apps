@@ -1,35 +1,39 @@
 
+# stay with _commit builds, keep in sync with what docker ships
 pkgname=containerd
-pkgver=0.2.4
-_commit=0ac3cd1be170d180b2baed755e8f0da547ceb267
+pkgver=1.4.3
+_commit=7ad184331fa3e55e52b890ea95e65ba581ae3429
 pkgrel=1
 arch=('x86_64')
 pkgdesc="Daemon to control runC, built for performance and density."
-url="https://containerd.tools/"
+url="https://containerd.io/"
 license=('APACHE')
-depends=('runc')
+depends=('runc' 'btrfs-progs')
 makedepends=('go')
-source=("https://github.com/docker/containerd/archive/v${pkgver}.tar.gz")
-#source=("https://github.com/docker/containerd/archive/${_commit}.zip")
-md5sums=('27f3c8c30ec2ec43fcfe5ea877edf284')
+source=("https://github.com/containerd/containerd/archive/v${pkgver}.tar.gz")
+#source=("https://github.com/containerd/containerd/archive/${_commit}.zip")
+md5sums=('8b0201fa609d511ad01fd52d5b544fe7')
 
 prepare() {
     cd ${srcdir}
     
-    install -d src/github.com/docker
-    mv ${pkgname}-${pkgver} src/github.com/docker/${pkgname}
+    install -d src/github.com/containerd
+    mv ${pkgname}-${pkgver} src/github.com/containerd/${pkgname}
+    
+    sed -i 's|/usr/local/bin/containerd|/usr/bin/containerd|' src/github.com/containerd/containerd/containerd.service
 }
 
 build() {
-    cd src/github.com/docker/${pkgname}
+    export GOPATH=~/gocode
+    cd src/github.com/containerd/${pkgname}
     
-    LDFLAGS="" GOPATH="$srcdir:$srcdir/${pkgname}/vendor" make
+    LDFLAGS="" GOPATH="$srcdir:$srcdir/${pkgname}/vendor" 
+    make
 }
 
 package() {
-    cd src/github.com/docker/${pkgname}/bin
+    cd src/github.com/containerd/${pkgname}
+    make install DESTDIR=${pkgdir}/usr
     
-    install -Dm755 containerd ${pkgdir}/usr/bin/containerd
-    install -Dm755 containerd-shim ${pkgdir}/usr/bin/containerd-shim
-    install -Dm755 ctr ${pkgdir}/usr/bin/ctr
+    install -Dm644 containerd.service ${pkgdir}/usr/lib/systemd/system/containerd.service
 }

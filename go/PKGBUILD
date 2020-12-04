@@ -1,10 +1,10 @@
 
 pkgname=go
-pkgver=1.7.3
+pkgver=1.15.6
 pkgrel=1
 pkgdesc='Google Go compiler and tools (release version)'
 arch=('x86_64')
-url='http://golang.org/'
+url='https://golang.org/'
 license=('BSD')
 depends=('perl' 'gawk')
 makedepends=('inetutils' 'go')
@@ -12,49 +12,44 @@ options=('!strip' 'staticlibs')
 install="${pkgname}.install"
 # check for versions: http://golang.org/dl/
 source=("https://storage.googleapis.com/golang/${pkgname}${pkgver}.linux-amd64.tar.gz")
-md5sums=('e6903ecf48cb975a6df8d35bc2b048ff')
+sha256sums=('3918e6cc85e7eaaa6f859f1bdbaac772e7a825b0eb423c63d3ae68b21f84b844')
 
 build() {
   cd go/src
-
+  # run prior to building:
+  export LC_ALL="en_US.UTF-8"
+  
   export GOROOT="${srcdir}/${pkgname}"
   export GOBIN="$GOROOT/bin"
   export GOPATH="${srcdir}/"
   export GOROOT_FINAL=/usr/lib/go
   export GOROOT_BOOTSTRAP="$GOROOT_FINAL"
-
   export GOOS=linux
-  export GOARCH=arm
-
+  
   bash make.bash
+  
+  export GOARCH=amd64
 
-  for os in linux; do 
-    for arch in amd64 386; do
-      export GOOS="$os"
-      export GOARCH="$arch"
-      bash make.bash --no-clean
-    done
-  done
+  bash make.bash --no-clean
 
   GOOS=linux
 
-  $GOROOT/bin/go get -d golang.org/x/tools/cmd/godoc
-  $GOROOT/bin/go build -o ${srcdir}/godoc golang.org/x/tools/cmd/godoc
-  for tool in benchcmp bundle callgraph cover digraph eg fiximports goimports gorename html2article present ssadump stress stringer tip; do
-    $GOROOT/bin/go get -d golang.org/x/tools/cmd/${tool}
-    $GOROOT/bin/go build -o $GOROOT/pkg/tool/${GOOS}_amd64/${tool} golang.org/x/tools/cmd/${tool}
-  done
+  #$GOROOT/bin/go get -d golang.org/x/tools/cmd/godoc
+  #$GOROOT/bin/go build -o ${srcdir}/godoc golang.org/x/tools/cmd/godoc
+  #for tool in benchcmp bundle callgraph cover digraph eg fiximports goimports gorename html2article present ssadump stress stringer toolstash; do
+  #  $GOROOT/bin/go get -d golang.org/x/tools/cmd/${tool}
+  #  $GOROOT/bin/go build -o $GOROOT/pkg/tool/${GOOS}_amd64/${tool} golang.org/x/tools/cmd/${tool}
+  #done
 }
 
 check() {
   cd go
 
-  export GO386=387
-
   export GOOS=linux
   export GOARCH=amd64
   export GOROOT="${srcdir}/${pkgname}"
   export GOBIN="$GOROOT/bin"
+  export GOCACHE=off
   export PATH="${srcdir}/${pkgname}-$pkgver/bin:$PATH"
 
   cd src && bash run.bash --no-rebuild || true
@@ -66,13 +61,13 @@ package() {
   export GOROOT="${srcdir}/${pkgname}"
   export GOBIN="$GOROOT/bin"
 
-  install -Dm755 "${srcdir}/godoc" "${pkgdir}/usr/bin/godoc"
+  #install -Dm755 "${srcdir}/godoc" "${pkgdir}/usr/bin/godoc"
 
   install -Dm644 LICENSE \
     "${pkgdir}/usr/share/licenses/go/LICENSE"
 
   mkdir -p \
-    "${pkgdir}/"{etc/profile.d,usr/{share/go,lib/go,lib/go/src,lib/go/site/src}}
+    "${pkgdir}/"{etc/profile.d,usr/{share/go,lib/go,lib/go/bin,lib/go/src,lib/go/site/src}}
 
   cp -r doc misc -t "${pkgdir}/usr/share/go"
   ln -s /usr/share/go/doc "${pkgdir}/usr/lib/go/doc"
@@ -88,7 +83,8 @@ package() {
   find "${pkgdir}" -type f -name sql.go -exec chmod -x {} \;
   find "${pkgdir}/usr/lib/go/src" -type f -executable -delete
 
-  ln -sf /usr/bin "${pkgdir}/usr/lib/go/bin"
+  ln -sf /usr/bin/go "${pkgdir}/usr/lib/go/bin/go"
+  ln -sf /usr/bin/gofmt "${pkgdir}/usr/lib/go/bin/gofmt"
 
   install -Dm755 src/make.bash "${pkgdir}/usr/lib/go/src/make.bash"
   install -Dm755 src/run.bash "${pkgdir}/usr/lib/go/src/run.bash"
@@ -97,6 +93,7 @@ package() {
   install -Dm644 favicon.ico "${pkgdir}/usr/lib/go/favicon.ico"
 
   rm -f "${pkgdir}/usr/share/go/doc/articles/wiki/get.bin"
+  rm -rf "${pkgdir}"/usr/lib/go/pkg/obj/go-build/*
 
   install -Dm644 VERSION "${pkgdir}/usr/lib/go/VERSION"
 

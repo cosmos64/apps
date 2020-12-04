@@ -1,33 +1,38 @@
 
 pkgname=qtcurve
-pkgver=1.8.18.13
-_commit=34a1e3277aa21c59029576bffe2576a9ddd4b1a7
+pkgver=1.9.1
+_commit=0020a42c02a3c488fef23d33a27fea41f302ba98
 pkgrel=1
 arch=('x86_64')
 license=('GPL')
 pkgdesc='The QtCurve style engine for Qt5 and Plasma 5.'
-url='https://projects.kde.org/projects/playground/base/qtcurve'
-depends=('karchive' 'kconfig' 'kconfigwidgets' 'ki18n' 'kdelibs4support' 'kio'
-         'kwidgetsaddons' 'kxmlgui' 'kguiaddons' 'kiconthemes' 'libx11' 'qt5-x11extras' 'qt5-svg')
+url='https://github.com/KDE/qtcurve/'
+depends=('karchive' 'kconfig' 'kconfigwidgets' 'frameworkintegration' 'ki18n' 'kguiaddons'
+         'kio' 'kwidgetsaddons' 'kwindowsystem' 'kxmlgui' 'kguiaddons' 'kiconthemes' 
+         'libx11' 'qt5-x11extras' 'qt5-svg')
 makedepends=('extra-cmake-modules' 'kdoctools')
-source=("https://github.com/KDE/qtcurve/archive/${_commit}.zip")
-md5sums=('47f2b33ec1a2ffe41c4cca999330951c')
+source=("https://github.com/KDE/qtcurve/archive/${_commit}.zip"
+        'DBus_crashing.diff')
+md5sums=('36d0057ee3766062964d11797c505e13'
+         'cf91da3678fcd6e31030b06f9e0560b4')
+
+prepare() {
+  cd ${pkgname}-${_commit}
+  
+  #patch -p0 -i ${srcdir}/DBus_crashing.diff
+}
 
 build() {
-    mkdir build
-    cd build
-    
-    cmake ../${pkgname}-${_commit} \
+    cmake -B build -S ${pkgname}-${_commit} \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DENABLE_GTK2=false \
         -DQTC_QT5_ENABLE_KDE=true \
         -DQTC_QT4_ENABLE_KDE=false
-    make
+    cmake --build build
 }
 
 package() {
-    cd build
-	
-    make DESTDIR=${pkgdir} install
+
+  DESTDIR=${pkgdir} cmake --install build 
 }

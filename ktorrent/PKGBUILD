@@ -1,44 +1,43 @@
 
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
 pkgname=ktorrent
-pkgver=5.0.1.1
-_commit=499ed1dffaff60a37e60fa566254188ee970bfdf
+pkgver=${_kdever}
 pkgrel=1
-ktorver=5.0
-pkgdesc="A BitTorrent program for KDE"
+pkgdesc="BitTorrent application by KDE which allows you to download files using the BitTorrent protocol."
 arch=('x86_64')
-url="http://ktorrent.pwsp.net/"
+url="https://apps.kde.org/en/ktorrent"
 license=('GPL2')
-depends=('kdelibs4support' 'ki18n' 'kio' 'kxmlgui' 'knotifications' 'knotifyconfig' 'solid'
-         'kconfig' 'kcoreaddons' 'kross' 'kcmutils' 'sonnet' 'kdbusaddons' 'kcrash' 'kdnssd'
-         'taglib' 'libktorrent' 'plasma-workspace' 'kdewebkit')
+depends=('ki18n' 'kiconthemes' 'kio' 'knotifications' 'knotifyconfig'
+         'kconfig' 'kconfigwidgets' 'kcoreaddons' 'kdbusaddons' 'kcrash' 'kcmutils' 'kparts'
+         'kservice' 'solid' 'kwidgetsaddons' 'kwindowsystem' 'kxmlgui' 'ktextwidgets' 
+         'kross' 'karchive' 'kitemviews' 'kdnssd'
+         'taglib' 'libktorrent' 'plasma-workspace' 'syndication' 'kcompletion' 'geoip') #'kdewebkit'
 makedepends=('extra-cmake-modules' 'boost' 'kdoctools')
 install=ktorrent.install
 groups=('network')
 options=('libtool')
-#source=("http://download.kde.org/stable/ktorrent/${ktorver}/${pkgname}-${pkgver}.tar.xz")
-source=("https://github.com/KDE/ktorrent/archive/${_commit}.zip")
-md5sums=('934ddf0ec035de18d82bb15bbce1f35c')
+source=($_mirror/${pkgname}-${_kdever}.tar.xz)
+# Need to set manually, automated also picks up md5 of libktorrent
+md5sums=('7ecbac00f734965d0f3addf510a5c34f')
 
 prepare() {
-  cd ${pkgname}-${_commit}
+  cd ${pkgname}-${pkgver}
 
   #sed -i 's|TARGETS ktorrent_app ${INSTALL_TARGETS_DEFAULT_ARGS}|TARGETS ktorrent_app ${KDE_INSTALL_TARGETS_DEFAULT_ARGS}|g' ktorrent/CMakeLists.txt
 }
 
 build() {
-  mkdir build
-  cd build
-  
-  cmake ../${pkgname}-${_commit} \
+  cmake -B build -S ${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DKDE_INSTALL_LIBDIR=lib \
-    -DKDE_INSTALL_USE_QT_SYS_PATHS=ON 
-  make
+    -DBUILD_TESTING=OFF
+  cmake --build build
 }
 
 package() {
-  cd build
-  
-  make DESTDIR=${pkgdir} install
+
+  DESTDIR=${pkgdir} cmake --install build
 }

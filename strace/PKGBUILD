@@ -1,15 +1,15 @@
 
 pkgname=strace
-pkgver=4.14
+pkgver=5.9
 pkgrel=1
 pkgdesc="A useful diagnositic, instructional, and debugging tool"
 arch=('x86_64')
-url="http://sourceforge.net/projects/strace/"
-license=('custom')
+url="https://strace.io"
+license=('BSD')
 depends=('perl')
 groups=('programming')
-source=("http://downloads.sourceforge.net/strace/${pkgname}-$pkgver.tar.xz")
-md5sums=('1e39b5f7583256d7dc21170b9da529ae')
+source=("https://strace.io/files/${pkgver}/${pkgname}-${pkgver}.tar.xz")
+md5sums=('fef7264b3501c6af86224c685751d0c6')
 
 build() {
   cd ${pkgname}-${pkgver}

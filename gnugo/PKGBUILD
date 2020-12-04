@@ -1,28 +1,26 @@
 
 pkgname=gnugo
 pkgver=3.8
-pkgrel=2
+pkgrel=4
 pkgdesc='Program that plays the game of Go'
-url='http://www.gnu.org/software/gnugo/'
-license=('GPL3' 'custom')
+url='https://www.gnu.org/software/gnugo/'
+license=('GPL3')
 arch=('x86_64')
 depends=('ncurses')
-source=("http://ftp.gnu.org/gnu/gnugo/${pkgname}-${pkgver}.tar.gz"
-        'LICENSE')
-md5sums=('6db0a528df58876d2b0ef1659c374a9a'
-         '4df5819356804397c553c95ea8164f11')
+source=("https://ftp.gnu.org/gnu/gnugo/${pkgname}-${pkgver}.tar.gz")
+md5sums=('6db0a528df58876d2b0ef1659c374a9a')
 
 build() {
-	cd "${srcdir}/${pkgname}-${pkgver}"
+	cd ${pkgname}-${pkgver}
 	
 	./configure --prefix=/usr
 	make
 }
 
 package() {
-	cd "${srcdir}/${pkgname}-${pkgver}"
-	make DESTDIR="${pkgdir}" install
+	cd ${pkgname}-${pkgver}
+	make DESTDIR=${pkgdir} install
 	
-	rm -r "${pkgdir}"/usr/share/info
-	install -Dm644 ../LICENSE "${pkgdir}/usr/share/licenses/${pkgname}"/LICENSE
+	rm -r ${pkgdir}/usr/share/info
+	install -Dm644 COPYING ${pkgdir}/usr/share/licenses/${pkgname}/COPYING
 }

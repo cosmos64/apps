@@ -1,7 +1,7 @@
 
 pkgname=kexi
-pkgver=3.0.0
-_pkgver=3.0.0
+pkgver=3.2.0
+_pkgver=3.2.0
 pkgrel=1
 pkgdesc="Visual database applications creator"
 arch=('x86_64')
@@ -9,18 +9,20 @@ url='http://kexi-project.org/'
 license=('FDL1.2' 'GPL2' 'LGPL')
 depends=('karchive' 'kcodecs' 'kcompletion' 'kconfig' 'kconfigwidgets' 'kcoreaddons' 
          'kguiaddons' 'ki18n' 'kiconthemes' 'kitemviews' 'kio' 'ktexteditor' 'ktextwidgets' 
-         'kwidgetsaddons' 'kxmlgui' 'marble' 'breeze-icons'
+         'kwidgetsaddons' 'kxmlgui' 'kcrash' 'marble' 'breeze-icons'
          'kproperty' 'kreport' 'kdb'
-         'libmariadbclient' 'sqlite3' 'qt5-webkit' 'xbase' 'freetds' 'postgresql') # will switch to qtwebengine
-makedepends=('extra-cmake-modules' 'kdoctools' 'git' 'qt5-tools') # 'clang') 
-source=("http://download.kde.org/stable/kexi/src/${pkgname}-${_pkgver}.tar.xz")
-#source=("https://github.com/KDE/kexi/archive/${_commit}.zip")
-md5sums=('87e4cc41e5c53c95fa58dd80c55ad6c2')
+         'libmariadbclient' 'sqlite3' 'qtwebkit-tp' 'freetds' 'postgresql') # will switch to qtwebengine
+makedepends=('extra-cmake-modules' 'kdoctools' 'qt5-tools') # 'clang') 
+source=("https://download.kde.org/stable/kexi/src/${pkgname}-${pkgver}.tar.xz"
+        "https://github.com/KDE/kexi/commit/1578fcb4a0407cf368edb6ee4605c4ef9e77b6ed.diff")
+sha256sums=('7a813f9ea815a09c1e733d0e7dc879c64eee85f075389e87e6aab99cf0c1c1ff'
+            '0377c28c0489883c2e4a4db1fdacc055ea3fdcb36070dde022ac85a0d7f6ec3e')
 
 prepare() {
-  cd ${pkgname}-${pkgver}
+  cd ${pkgname}-${_pkgver}
   
-  #patch -p1 -i $srcdir/desktop_files.patch
+  #patch -p1 -i $srcdir/1578fcb4a0407cf368edb6ee4605c4ef9e77b6ed.diff
+  sed -i -e 's|KexiMarble ${MARBLE_MIN_VERSION}|Marble ${MARBLE_MIN_VERSION}|' CMakeLists.txt
 }
 
 build() {
@@ -30,7 +32,7 @@ build() {
   #export CC=/usr/bin/clang
   #export CXX=/usr/bin/clang++
   
-  cmake ../${pkgname}-${pkgver} \
+  cmake ../${pkgname}-${_pkgver} \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DCMAKE_INSTALL_LIBDIR=lib \

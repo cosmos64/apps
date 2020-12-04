@@ -1,0 +1,29 @@
+
+pkgname=pulseaudio-qt
+pkgver=1.2
+pkgrel=1
+pkgdesc='Allows programs using the Qt library to control volume and react to changes on systems which use PulseAudio.'
+arch=('x86_64')
+url='https://github.com/KDE/pulseaudio-qt'
+license=('LGPL')
+depends=('qt5-declarative' 'pulseaudio')
+makedepends=('extra-cmake-modules' 'qt5-tools')
+source=("https://download.kde.org/stable/pulseaudio-qt/${pkgname}-${pkgver}.tar.xz")
+sha256sums=('2901121a27eb9b701727d299829d70a34509e5d1a3e94c84ee32ed3e91a118c4')
+
+build() {
+  mkdir -p build
+  cd build
+  
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_INSTALL_LIBDIR=lib \
+    -DBUILD_TESTING=OFF
+  make
+}
+
+package() {
+  cd build
+  
+  make DESTDIR=${pkgdir} install
+}

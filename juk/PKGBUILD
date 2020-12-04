@@ -9,30 +9,33 @@ pkgdesc='A jukebox, tagger and music collection manager'
 url='http://kde.org/applications/multimedia/juk/'
 arch=('x86_64')
 license=('GPL' 'LGPL' 'FDL')
-depends=('kdelibs' 'taglib')
-makedepends=('cmake' 'automoc4')
-groups=('kde' 'kdemultimedia' 'kde-uninstall')
-provides=('kdemultimedia-juk')
-conflicts=('kdemultimedia-juk')
-replaces=('kdemultimedia-juk')
-source=("$_mirror/${pkgname}-$_kdever.tar.xz")
-md5sums=(`grep ${pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
-
+depends=('kcoreaddons' 'kcompletion' 'kconfig' 'kcrash' 'kglobalaccel' 'ki18n' 'kiconthemes' 'kdbusaddons'
+         'kio' 'kjobwidgets' 'knotifications' 'ktextwidgets' 'kxmlgui' 'kwallet' 'kwidgetsaddons'
+         'kwindowsystem' 'qt5-svg' 'taglib')
+makedepends=('extra-cmake-modules' 'kdoctools')
+groups=('kde' 'kde-multimedia' 'kde-uninstall')
+source=("$_mirror/${pkgname}-${_kdever}.tar.xz")
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
 
 build() {
-	cd ${srcdir}/${pkgname}-${pkgver}
-	
-	cmake . -DCMAKE_BUILD_TYPE=${_build_type} \
-                -DCMAKE_INSTALL_PREFIX=${_installprefix} \
-                -DCMAKE_SKIP_RPATH=ON \
-		-DWITH_TunePimp=OFF \
-                -DCMAKE_{SHARED,MODULE,EXE}_LINKER_FLAGS='-Wl,--no-undefined -Wl,--as-needed'
-	make
+  mkdir -p build
+  cd build
+  
+  cmake ../${pkgname}-${pkgver} \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DHAVE_TUNEPIMP=0 \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_QMLDIR=/usr/lib/qt5/qml \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
+    -DBUILD_TESTING=OFF 
+  make 
 }
 
 package() {
-	cd ${srcdir}/${pkgname}-${pkgver}
-	
-	make DESTDIR=${pkgdir} install
+  cd build
+  
+  make DESTDIR=${pkgdir} install
 }
 

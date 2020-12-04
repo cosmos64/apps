@@ -1,15 +1,18 @@
 
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
 pkgname=kio-gdrive
-pkgver=1.0.3
+pkgver=${_kdever}
 pkgrel=1
 pkgdesc="KIO Slave to access Google Drive"
 arch=('x86_64')
-url='https://github.com/KDE/kio-gdrive'
+url='https://community.kde.org/KIO_GDrive'
 license=('GPL2')
-depends=('ki18n' 'kio' 'libkgapi' 'qtkeychain' 'dolphin')
-makedepends=('extra-cmake-modules' 'kdoctools')
-source=("http://download.kde.org/stable/kio-gdrive/${pkgver}/src/${pkgname}-${pkgver}.tar.xz")
-md5sums=('beea120436bc6e220bac1d348189c01c')
+depends=('ki18n' 'kio' 'libkgapi' 'qtkeychain' 'dolphin' 'kaccounts-integration')
+makedepends=('extra-cmake-modules' 'kdoctools' 'intltool')
+source=("$_mirror/${pkgname}-${_kdever}.tar.xz")
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
 
 build() {
   mkdir -p build

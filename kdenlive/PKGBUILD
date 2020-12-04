@@ -5,36 +5,37 @@ source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 pkgname=kdenlive
 pkgver=${_kdever}
 pkgrel=1
-pkgdesc="A non-linear video editor for Linux"
+pkgdesc="Free and Open Source video editing application, based on MLT Framework and KDE Frameworks 5."
 arch=('x86_64')
-url="http://www.kdenlive.org/"
+url="https://www.kdenlive.org/"
 license=('GPL')
 depends=('karchive' 'kbookmarks' 'kcoreaddons' 'kconfig' 'kconfigwidgets' 'kdbusaddons' 'kio'
-         'kservice' 'kwidgetsaddons' 'kplotting' 'knotifyconfig' 'knewstuff' 'kxmlgui' 'knotifications'
-         'kguiaddons' 'ktextwidgets' 'kiconthemes'
-         'mlt' 'dvgrab' 'frei0r-plugins' 'qimageblitz') 
+         'kwidgetsaddons' 'knotifyconfig' 'knewstuff' 'kxmlgui' 'knotifications'
+         'kguiaddons' 'ktextwidgets' 'kiconthemes' 'kfilemetadata' 'kcrash' 'purpose' 'ki18n'
+         'mlt' 'dvgrab' 'frei0r-plugins') 
 makedepends=('extra-cmake-modules' 'kdoctools' 'gettext' 'docbook-xsl')
 optdepends=("dvdauthor: for creating dvds")
-conflicts=('kf5-kdenlive')
-replaces=('kf5-kdenlive')
 groups=('multimedia')
 source=("$_mirror/${pkgname}-$_kdever.tar.xz") 
 md5sums=(`grep ${pkgname}-$_kdever.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
 
+prepare() {
+  cd ${pkgname}-${pkgver}
+  # Qt 5.14 needed
+  #patch -p1 -i ${srcdir}/b20a7307368932b35ec0d7cdebb68a710cbbf8ba.diff
+}
+
 build() {
-  cd ${srcdir}
-  #sed -e "s/Qt5::core/Qt5::core KF5::KWidgetsAddons/" -i ${srcdir}/$pkgname/libkdegames/CMakeLists.txt
-  
   mkdir -p build
   cd build
 
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_INSTALL_DIR=lib \
-    -DSYSCONF_INSTALL_DIR=/etc \
-    -DQML_INSTALL_DIR=/usr/lib/qt5/qml \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
+    -DKDE_INSTALL_QMLDIR=/usr/lib/qt5/qml \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DKDE_INSTALL_USE_QT_SYS_PATHS=ON \
     -DBUILD_TESTING=OFF 
   make

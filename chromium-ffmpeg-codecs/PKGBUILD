@@ -1,29 +1,47 @@
  
 pkgname=chromium-ffmpeg-codecs
-pkgver=54.0.2840.71
+pkgver=80.0.3987.163
 pkgrel=1
 pkgdesc="Extra ffmpeg codecs from the Chromium Browser for use in other browsers"
 arch=('x86_64')
 url="https://ffmpeg.org/"
 license=('LGPL2.1')
-depends=('gtk2' 'libexif' 'pulseaudio' 'libxss')
-makedepends=('ninja' 'nss' 'pciutils' 'python2' 'xdg-utils')
+depends=('gtk3' 'libexif' 'pulseaudio' 'libxss' 'gdk-pixbuf2')
+makedepends=('ninja' 'nss' 'pciutils' 'python2' 'xdg-utils' 'mesa' 'gn' 'clang')
 options=('!strip')
-source=("https://commondatastorage.googleapis.com/chromium-browser-official/chromium-$pkgver.tar.xz"
-        'gn.patch')
-md5sums=('30bb11c67bfbb30a28ca0b0cb6e06740'
-         '3354997dd0bfde3443499133a6e16a85')
+groups=('network-web' 'multimedia')
+source=("https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${pkgver}.tar.xz"
+        'gn.patch'
+        'ffmpeg_clang.patch')
+        #"https://gitweb.gentoo.org/repo/gentoo.git/plain/www-client/chromium/files/chromium-FORTIFY_SOURCE-r2.patch"
+        #"https://gitweb.gentoo.org/repo/gentoo.git/plain/www-client/chromium/files/chromium-memcpy-r0.patch"
+        #"https://raw.githubusercontent.com/gentoo/gentoo/master/www-client/chromium/files/chromium-clang-r2.patch")
+md5sums=('b626d2d09fdad77c4df2daf23ec8bcb9'
+         '3354997dd0bfde3443499133a6e16a85'
+         '767e3e82f89de949909eb990204185cd')
 
 build() {
   cd chromium-${pkgver}
   #touch chrome/test/data/webui/i18n_process_css_test.html
-  #sed -i "s|ld = os.environ.get('LD', cxx)|ld = cxx|g" tools/gn/bootstrap/bootstrap.py
-  #patch -p1 -i ${srcdir}/gn.patch
+  #sed -i "s|base/callback_internal.cc|base/callback_helpers.cc|g" tools/gn/bootstrap/bootstrap.py
+  # from https://github.com/gentoo/gentoo/tree/master/www-client/chromium/files
+  #patch -p1 -i ${srcdir}/ffmpeg_clang.patch
+  #patch -p1 -i ${srcdir}/chromium-FORTIFY_SOURCE-r2.patch
+  #patch -p1 -i ${srcdir}/chromium-clang-r2.patch
+  
+  export CC="/usr/bin/clang"
+  export CXX="/usr/bin/clang++"
+  
+  python2 tools/clang/scripts/update.py
 
   local _flags=("ffmpeg_branding=\"ChromeOS\""
                 'proprietary_codecs=true'
-                'enable_hevc_demuxing=true'
-                'use_gconf=false'
+                'enable_platform_hevc=true'
+                'enable_platform_ac3_eac3_audio=true'
+                'enable_platform_mpeg_h_audio=true'
+                'enable_platform_dolby_vision=true'
+                'enable_mse_mpeg2ts_stream_parser=true'
+                'enable_wayland_server=false'
                 'use_gio=false'
                 'use_gnome_keyring=false'
                 'use_kerberos=false'
@@ -32,18 +50,21 @@ build() {
                 'use_gold=false'
                 'linux_use_bundled_binutils=false'
                 'use_allocator="none"'
-                'is_clang=false'
-                'clang_use_chrome_plugins=false'
+                'is_clang=true'
+                'clang_use_chrome_plugins=true'
                 'fatal_linker_warnings=false'
                 'treat_warnings_as_errors=false'
+                'enable_nacl=false' 
+                'enable_nacl_nonsfi=false'
                 'is_component_build=true'
                 'is_debug=false'
-                'symbol_level=0')
+                'symbol_level=0'
+                'use_custom_libcxx=true')
   
-  python2 tools/gn/bootstrap/bootstrap.py --gn-gen-args "${_flags[*]}"
-  out/Release/gn gen out/Release -v --args="${_flags[*]}" --script-executable=/usr/bin/python2
+  #python2 tools/gn/bootstrap/bootstrap.py -v -s
+  gn gen out/Release -v --args="${_flags[*]}" --script-executable=/usr/bin/python2
 
-  ninja -C out/Release media/ffmpeg
+  ninja -C out/Release -v media/ffmpeg
 }
 
 package() {

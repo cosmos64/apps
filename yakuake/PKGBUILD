@@ -1,24 +1,27 @@
 
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
+
 pkgname=yakuake
-pkgver=3.0.2
+pkgver=${_kdever}
 pkgrel=1
 pkgdesc="A KDE konsole application with the look and feel of that in the Quake engine, kf5 version"
 arch=('x86_64')
-url="http://yakuake.kde.org"
+url="https://kde.org/applications/system/org.kde.yakuake"
 license=('GPL')
-depends=('karchive' 'kconfig' 'kcoreaddons' 'kdbusaddons' 'kglobalaccel' 'ki18n' 'kiconthemes' 'kio'
-         'knewstuff' 'knotifications' 'knotifyconfig' 'kparts' 'kwidgetsaddons' 'kwindowsystem')
+depends=('karchive' 'kconfig' 'kcoreaddons' 'kdbusaddons' 'kglobalaccel' 'ki18n' 'kiconthemes'
+         'kio' 'knewstuff' 'knotifications' 'knotifyconfig' 'kparts' 'kwidgetsaddons' 
+         'kwindowsystem' 'kwayland')
 makedepends=('extra-cmake-modules')
-conflicts=('kf5-yakuake')
-replaces=('kf5-yakuake')
 groups=('system')
-source=("http://download.kde.org/stable/yakuake/${pkgver}/src/${pkgname}-${pkgver}.tar.xz")
-md5sums=('6c5eaea40770283078dad6fa288615c5')
+source=($_mirror/${pkgname}-${_kdever}.tar.xz)
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
 
 prepare() {
   cd ${pkgname}-${pkgver}
   #sed -i -e 's|<default>default<default>|<default>breezeV1.0</default>|' ${srcdir}/${pkgname}/app/config/yakuake.kcfg
-  #patch -p1 -i $srcdir/default_skin.diff
+  # wayland erratic placement fix
+  #patch -p1 -i $srcdir/7534df21025b10fd236dd5a8f92d0dff7889e0ef.diff
   
 }
 
@@ -29,10 +32,10 @@ build() {
   cmake ../${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
-    -DLIB_INSTALL_DIR=lib \
-    -DSYSCONF_INSTALL_DIR=/etc \
-    -DQML_INSTALL_DIR=/usr/lib/qt5/qml \
-    -DPLUGIN_INSTALL_DIR=/usr/lib/qt5/plugins \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DKDE_INSTALL_SYSCONFDIR=/etc \
+    -DKDE_INSTALL_QMLDIR=/usr/lib/qt5/qml \
+    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DBUILD_TESTING=OFF 
   make
 }

@@ -1,44 +1,39 @@
 
+# include global config
+source ../_buildscripts/${current_repo}-${_arch}-cfg.conf
 
 pkgname=konversation
-pkgver=1.6.2
-_pkgver=1.6.2
+pkgver=${_kdever}
 pkgrel=1
 pkgdesc="A user friendly IRC client for KDE"
 arch=('x86_64')
-url="http://konversation.kde.org"
+url="https://konversation.kde.org"
 license=('GPL2' 'FDL')
-depends=('kfilemetadata' 'kidletime' 'kcmutils' 'krunner' 'kemoticons' 
-         'knotifyconfig' 'phonon-qt5' 'baloo-widgets' 'qca-qt5')
+depends=('karchive' 'kbookmarks' 'kconfig' 'kconfigwidgets' 'kcoreaddons' 'kcrash' 'kemoticons' 'ki18n' 
+         'kidletime' 'knotifyconfig' 'kio' 'kparts' 'solid' 'kwallet' 'kwidgetsaddons' 'kglobalaccel'
+         'kdbusaddons' 'knotifications' 'kwindowsystem' 'kiconthemes' 'kitemviews' 'knewstuff'
+         'phonon-qt5' 'qca-qt5')
 makedepends=('extra-cmake-modules' 'kdoctools')
-conflicts=('kf5-konversation')
-replaces=('kf5-konversation')
 groups=('communication')
-source=("http://download.kde.org/stable/${pkgname}/${_pkgver}/src/${pkgname}-${_pkgver}.tar.xz")
-md5sums=('b65e30362158fb68e80fa42734ca2558')
+source=($_mirror/${pkgname}-${_kdever}.tar.xz)
+md5sums=(`grep ${pkgname}-${_kdever}.tar.xz ../kde-sc.md5 | cut -d" " -f1`)
 
 prepare() {
-  cd ${pkgname}-${_pkgver}
-  #sed -i -e 's|find_package(Qca 2.1.0)|find_package(Qca 2.1.0 NAMES Qca-qt5 Qca)|' ${srcdir}/${pkgname}/CMakeLists.txt
+  cd ${pkgname}-${pkgver}
+  # set default channel to KaOS
+  sed -i -e 's|setName(QStringLiteral("#konversation")|setName(QStringLiteral("#kaosx")|' src/config/preferences.cpp
+  
+  #patch -p1 -i ${srcdir}/461c7dd504299871d6e9068116125b9bd26e8985.diff
 }
 
 build() {
-  mkdir -p build
-  cd build
-  
-  cmake ../${pkgname}-${_pkgver} \
+  cmake -B build -S ${pkgname}-${pkgver} \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX=/usr \
-    -DKDE_INSTALL_LIBDIR=lib \
-    -DKDE_INSTALL_SYSCONFDIR=/etc \
-    -DKDE_INSTALL_QMLDIR=/usr/lib/qt5/qml \
-    -DKDE_INSTALL_PLUGINDIR=/usr/lib/qt5/plugins \
     -DBUILD_TESTING=OFF 
-  make
+  cmake --build build
 }
 
 package() {
-  cd build
-  
-  make DESTDIR="$pkgdir" install
+
+  DESTDIR=${pkgdir} cmake --install build
 }

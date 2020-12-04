@@ -1,0 +1,28 @@
+ 
+pkgname=kdiff3
+pkgver=1.8.4
+pkgrel=1
+pkgdesc='Utility for comparing and merging files and directories'
+arch=('x86_64')
+url='https://invent.kde.org/sdk/kdiff3'
+license=('LGPL')
+depends=('ki18n' 'kcoreaddons' 'kcrash' 'kiconthemes' 'kparts' 'kwidgetsaddons' 'kio' 'clang-tools-extra')
+makedepends=('extra-cmake-modules' 'kdoctools')
+groups=('programming')
+source=("https://download.kde.org/stable/kdiff3/${pkgname}-${pkgver}.tar.xz")
+sha256sums=('76e18e097a078c1a440a32562734391d71d12446fcd3b2afeece87c136f43bb8')
+
+build() {
+  cmake -B build -S ${pkgname}-${pkgver} \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DKDE_INSTALL_LIBDIR=lib \
+    -DENABLE_CLANG_TIDY=ON \
+    -DBUILD_TESTING=OFF
+  cmake --build build
+}
+
+package() {
+
+  DESTDIR=${pkgdir} cmake --install build
+}

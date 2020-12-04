@@ -1,42 +1,46 @@
 
 pkgname=gimp
-pkgver=2.9.4
-_pkgver=2.9
+pkgver=2.10.22
+_pkgver=2.10
+__pkgver=2.10.22
 pkgrel=1
 pkgdesc="GNU Image Manipulation Program"
 arch=('x86_64')
-url="http://www.gimp.org/"
+url="https://www.gimp.org/"
 license=('GPL3' 'LGPL3')
-depends=('pygtk' 'lcms' 'libxpm' 'libwmf' 'librsvg' 'libmng' 'libgudev' 'dbus-glib' 
-         'jasper' 'libexif' 'gegl' 'desktop-file-utils' 'hicolor-icon-theme' 'gexiv2' 'libmypaint')
-makedepends=('intltool' 'webkitgtk2' 'poppler-glib' 'alsa-lib' 'iso-codes' 'curl' 'ghostscript')
-optdepends=('gutenprint: for sophisticated printing only as gimp has built-in cups print support'
-            'webkitgtk2: for the help browser or web-page plug-ins'
-            'poppler-glib: for pdf support'
-            'alsa-lib: for MIDI event controller module'
-            'curl: for URI support')
+depends=('gtk2' 'lcms2' 'libxpm' 'librsvg' 'libmng' 'libgudev' 'dbus-glib' 'libexif' 
+         'gegl' 'desktop-file-utils' 'hicolor-icon-theme' 'gexiv2' 'libmypaint' 'alsa-lib'
+         'curl' 'glib-networking' 'mypaint-brushes')
+makedepends=('intltool' 'poppler' 'iso-codes' 'ghostscript')
+optdepends=('kde-gtk-config: gtk integration settings for Plasma')
+optdepends=('gutenprint: for sophisticated printing only as gimp has built-in cups print support')
 options=('!libtool' '!makeflags')
-source=("http://download.gimp.org/pub/gimp/v${_pkgver}/gimp-${pkgver}.tar.bz2"
-        'linux.gpl')
-md5sums=('6b3d425a7949110eeb532badedf721f3'
-         'bb27bc214261d36484093e857f015f38')
+source=("https://download.gimp.org/pub/gimp/v${_pkgver}/gimp-${__pkgver}.tar.bz2"
+        'linux.gpl'
+        "https://github.com/GNOME/gimp/commit/46bcd82800e37b0f5aead76184430ef2fe802748.diff")
+sha256sums=('2db84b57f3778d80b3466d7c21a21d22e315c7b062de2883cbaaeda9a0f618bb'
+            '1003bbf5fc292d0d63be44562f46506f7b2ca5729770da9d38d3bb2e8a2f36b3'
+            '87085fa7c7c0a4b315a6f018a753e92835ae28980b945c2b4f74951cadbb714b')
 
 build() {
-  cd gimp-${pkgver}
+  cd gimp-${__pkgver}
   #sed -e "s|gegl-0.2 >= 0.2.0|gegl-0.3 >= 0.3.0|" -i ${srcdir}/gimp-${pkgver}/configure
+  # CVE-2007-3126
+  #patch -p1 -i ${srcdir}/46bcd82800e37b0f5aead76184430ef2fe802748.diff
   
   ./configure --prefix=/usr \
     --sysconfdir=/etc \
     --enable-mp \
     --enable-gimp-console \
-    --enable-python \
+    --disable-python \
     --without-aa \
-    --enable-vector-icons
+    --without-wmf 
+    #--enable-vector-icons
   make
 }
 
 package() {
-  cd gimp-${pkgver}
+  cd gimp-${__pkgver}
   make DESTDIR=${pkgdir} install
   
   install -D -m644 ${srcdir}/linux.gpl ${pkgdir}/usr/share/gimp/2.0/palettes/Linux.gpl

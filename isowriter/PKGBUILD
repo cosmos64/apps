@@ -1,14 +1,12 @@
  
 pkgname=isowriter
-pkgver=1.0.4
+pkgver=1.2.5
 pkgrel=1
 pkgdesc="Tool for creating bootable installation USB flash drives"
 arch=('x86_64')
 url="https://github.com/KaOSx/isowriter"
 license=('GPLv2')
-depends=('qt5-base')
-conflicts=('rosa-imagewriter')
-replaces=('rosa-imagewriter')
+depends=('qt5-base' 'kdialog')
 source=("git://github.com/KaOSx/isowriter")
 md5sums=('SKIP')
 
@@ -23,4 +21,11 @@ package() {
   cd ${pkgname}
   
   make INSTALL_ROOT=${pkgdir}/ install
+  
+  for mofile in po/*.mo
+  do
+    filename=`basename $mofile`
+    lang=${filename/.mo/}
+    install -D -m 644 $mofile ${pkgdir}/usr/share/locale/$lang/LC_MESSAGES/checkisowriter.mo
+  done
 }
